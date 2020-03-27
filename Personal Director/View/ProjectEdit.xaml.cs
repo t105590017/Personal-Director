@@ -1,9 +1,11 @@
 ﻿using Personal_Director.Model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage.FileProperties;
@@ -20,62 +22,15 @@ namespace Personal_Director
 {
     public sealed partial class ProjectEdit : Page
     {
-        const int STEP_FRAME_NUM = 15;
-        private Project project { get; set; }
+        private Project Project { get; set; }
         private bool IsPutAwayMediaCabinet { get; set; } = true;
+        private ObservableCollection<Media> MediaCabinetDataList { get; set; }
+        private ObservableCollection<Media> MediaScriptDataList { get; set; }
+        private string MediaSelectGuid { get; set; }
 
         public ProjectEdit()
         {
             this.InitializeComponent();
-            ScriptList.Items.Add(new Media()
-            {
-                Describe = "1"
-            });
-            ScriptList.Items.Add(new Media()
-            {
-                Describe = "2"
-            });
-            ScriptList.Items.Add(new Media()
-            {
-                Describe = "3"
-            });
-            ScriptList.Items.Add(new Media()
-            {
-                Describe = "4"
-            });
-            ScriptList.Items.Add(new Media()
-            {
-                Describe = "1"
-            });
-            ScriptList.Items.Add(new Media()
-            {
-                Describe = "2"
-            });
-            ScriptList.Items.Add(new Media()
-            {
-                Describe = "3"
-            });
-            ScriptList.Items.Add(new Media()
-            {
-                Describe = "4"
-            });
-            ScriptList.Items.Add(new Media()
-            {
-                Describe = "1"
-            });
-            ScriptList.Items.Add(new Media()
-            {
-                Describe = "2"
-            });
-            ScriptList.Items.Add(new Media()
-            {
-                Describe = "3"
-            });
-            ScriptList.Items.Add(new Media()
-            {
-                Describe = "4"
-            });
-            ScrollViewer scrollViewer = new ScrollViewer();
         }
 
         #region event
@@ -86,8 +41,6 @@ namespace Personal_Director
 
         private bool On_BackRequested()
         {
-            this.project.Name = this.project.Name + "1";
-
             if (this.Frame.CanGoBack)
             {
                 this.Frame.GoBack();
@@ -100,13 +53,20 @@ namespace Personal_Director
         {
             if (e.Parameter is Project)
             {
-                project = (Project)e.Parameter;
+                Project = (Project)e.Parameter;
+                SetViewData(Project);
             }
             else
             {
                 throw new Exception("ne project !!");
             }
             base.OnNavigatedTo(e);
+        }
+
+        private void SetViewData(Project viewModel)
+        {
+            MediaScriptDataList = new ObservableCollection<Media>(viewModel.MediaScriptList);
+            MediaCabinetDataList = new ObservableCollection<Media>(viewModel.MediaCabinetList);
         }
 
         private async void AddMedia_ClickAsync(object sender, RoutedEventArgs e)
@@ -127,11 +87,12 @@ namespace Personal_Director
                 const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
                 var image = new BitmapImage();
                 image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
-                MediaCabinetList.Items.Add(new Media()
+                this.MediaCabinetDataList.Add(new Media()
                 {
                     Thumbnail = image,
                     Describe = file.Name
                 });
+
             }
             else
             {
@@ -152,7 +113,51 @@ namespace Personal_Director
 
         #endregion
 
-       
+        private void MediaScriptList_DragOver(object sender, DragEventArgs e)
+        {
+            e.AcceptedOperation = DataPackageOperation.Link;
+        }
 
+        private void MediaScriptList_Drop(object sender, DragEventArgs e)
+        {
+            var gridView = ((GridView)sender);
+
+            //Find the position where item will be dropped in the gridview
+            Point pos = e.GetPosition(gridView.ItemsPanelRoot);
+
+            //Get the size of one of the list items
+            GridViewItem gvi = (GridViewItem)gridView.ContainerFromIndex(0);
+            double itemHeight = gvi.ActualWidth + gvi.Margin.Left + gvi.Margin.Right;
+
+            //Determine the index of the item from the item position (assumed all items are the same size)
+            int index = Math.Min(gridView.Items.Count - 1, (int)(pos.X / itemHeight));
+
+            Media media = MediaCabinetDataList.FirstOrDefault(i => i.Guid.ToString() == MediaSelectGuid);
+
+            this.MediaScriptDataList.Insert(index, new Media(media));
+        }
+
+        private void Grid_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            Grid grid = (Grid)sender;
+            this.MediaSelectGuid = grid.Tag.ToString();
+        }
+
+        private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.MediaScriptDataList.Remove(this.MediaScriptDataList.FirstOrDefault(i => i.Guid.ToString() == this.MediaSelectGuid));
+        }
+
+        private void Grid_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            var flyout = this.ImageCommandsFlyout;
+            this.MediaSelectGuid = ((Grid)sender).Tag.ToString();
+            var options = new FlyoutShowOptions()
+            {
+                Position = e.GetPosition((FrameworkElement)sender),
+                ShowMode = FlyoutShowMode.Transient
+            };
+            flyout?.ShowAt((FrameworkElement)sender, options);
+        }
     }
 }
