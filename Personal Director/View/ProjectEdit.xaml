@@ -5,7 +5,8 @@
     xmlns:local="using:Personal_Director"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Height="784" Background="#FFEEE1E1" Width="1495">
+    xmlns:viewextend="using:Personal_Director.ViewExtend"
+    mc:Ignorable="d" Background="#FFEEE1E1">
 
     <Page.TopAppBar>
         <CommandBar>
@@ -27,6 +28,20 @@
             <RowDefinition Height="6*"/>
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
+
+        <Grid.Resources>
+            <CommandBarFlyout x:Name="ImageCommandsFlyout">
+                <!--<AppBarButton Icon="OutlineStar" ToolTipService.ToolTip="Favorite"/>
+                <AppBarButton Icon="Copy" ToolTipService.ToolTip="Copy"/>
+                <AppBarButton Icon="Share" ToolTipService.ToolTip="Share"/>-->
+                <AppBarButton Label="Delete" Icon="Delete" Click="AppBarButton_Click"/>
+                <CommandBarFlyout.SecondaryCommands>
+                    <AppBarButton Label="Select all"/>
+                    <AppBarButton Label="Delete" Icon="Delete"  Click="AppBarButton_Click"/>
+                </CommandBarFlyout.SecondaryCommands>
+            </CommandBarFlyout>
+        </Grid.Resources>
+        
         <Grid Grid.Row="0" Grid.Column="0" Background="White">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40"/>
@@ -63,10 +78,10 @@
                 </StackPanel>
             </Button>
 
-            <GridView x:Name="MediaCabinetList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple">
+            <viewextend:GridViewEx x:Name="MediaCabinetList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" AllowDrop="True" CanReorderItems="True" ItemsSource="{x:Bind Path=MediaCabinetDataList, Mode=TwoWay}">
                 <GridView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Height="120" Width="210">
+                        <Grid Height="120" Width="210" PointerPressed="Grid_PointerPressed" Tag="{Binding Guid}">
                             <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"/>
                             <StackPanel Orientation="Vertical" Height="60" VerticalAlignment="Bottom" Padding="12">
                                 <TextBlock Text="{Binding Describe}" />
@@ -79,7 +94,7 @@
                         <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal"/>
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
-            </GridView>
+            </viewextend:GridViewEx>
         </Grid>
 
         <Grid Grid.Row="0" Grid.Column="1">
@@ -102,7 +117,7 @@
             </MediaPlayerElement>
         </Grid>
 
-        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Background="White" Margin="0,20,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="1485">
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Background="White" Margin="0,20,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40"/>
                 <ColumnDefinition Width="*"/>
@@ -116,48 +131,59 @@
             </Grid.RowDefinitions>
             <TextBlock Grid.Column="1" Grid.Row="1" Text="分鏡腳本" TextWrapping="Wrap" FontWeight="Bold" Width="74" VerticalAlignment="Center" HorizontalAlignment="Left" Height="19"/>
 
-            <Button  Grid.Column="1" Grid.Row="1" Background="{x:Null}" Height="30" Width="30" Padding="3,3,3,3" HorizontalAlignment="Right" Margin="0,0,180,0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF16B;" FontSize="11" HorizontalAlignment="Right"/>
-                </StackPanel>
-            </Button>
-            <Button  Grid.Column="1" Grid.Row="1" Background="{x:Null}" Height="30" Width="30" Padding="3,3,3,3" HorizontalAlignment="Right" Margin="0,0,150,0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF16B;" FontSize="11" HorizontalAlignment="Right"/>
-                </StackPanel>
-            </Button>
-            <Button  Grid.Column="1" Grid.Row="1" Background="{x:Null}" Height="30" Width="30" Padding="3,3,3,3" HorizontalAlignment="Right" Margin="0,0,120,0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF16B;" FontSize="11" HorizontalAlignment="Right"/>
-                </StackPanel>
-            </Button>
-            <Button  Grid.Column="1" Grid.Row="1" Background="{x:Null}" Height="30" Width="30" Padding="3,3,3,3" HorizontalAlignment="Right" Margin="0,0,90,0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF16B;" FontSize="11" HorizontalAlignment="Right"/>
-                </StackPanel>
-            </Button>
-            <Button  Grid.Column="1" Grid.Row="1" Background="{x:Null}" Height="30" Width="30" Padding="3,3,3,3" HorizontalAlignment="Right" Margin="0,0,60,0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF16B;" FontSize="11" HorizontalAlignment="Right"/>
-                </StackPanel>
-            </Button>
-            <Button  Grid.Column="1" Grid.Row="1" Background="{x:Null}" Height="30" Width="30" Padding="3,3,3,3" HorizontalAlignment="Right" Margin="0,0,30,0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF16B;" FontSize="11" HorizontalAlignment="Right"/>
-                </StackPanel>
-            </Button>
-            <Button  Grid.Column="1" Grid.Row="1" Background="{x:Null}" Height="30" Width="30" Padding="3,3,3,3" HorizontalAlignment="Right">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF16B;" FontSize="11" HorizontalAlignment="Right"/>
-                </StackPanel>
-            </Button>
+            <StackPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE78A;" FontSize="14" HorizontalAlignment="Right"/>
+                        <TextBlock Margin="5,0,0,0" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">修剪</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE775;" FontSize="14" HorizontalAlignment="Right"/>
+                        <TextBlock Margin="5,0,0,0" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">文字</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE759;" FontSize="14" HorizontalAlignment="Right"/>
+                        <TextBlock Margin="5,0,0,0" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">動畫</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE790;" FontSize="14" HorizontalAlignment="Right"/>
+                        <TextBlock Margin="5,0,0,0" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">濾鏡</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC4A;" FontSize="14" HorizontalAlignment="Right"/>
+                        <TextBlock Margin="5,0,0,0" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">速度</TextBlock>
+                    </StackPanel>
+                </Button>
+                
+                <AppBarSeparator/>
 
-            <GridView x:Name="ScriptList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" 
+                <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7AD;" FontSize="14" HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Button>
+                <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE74D;" FontSize="14" HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+
+            <GridView x:Name="MediaScriptList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" AllowDrop="True" CanReorderItems="True" ItemsSource="{x:Bind Path=MediaScriptDataList, Mode=TwoWay}"
                       ScrollViewer.HorizontalScrollMode="Enabled"
-                      ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalContentAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalContentAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Hidden" Drop="MediaScriptList_Drop" DragOver="MediaScriptList_DragOver">
                 <GridView.ItemTemplate>
                     <DataTemplate x:Name="ImageOverlayDataTemplate" >
-                        <Grid Height="120" Width="210">
+                        <Grid Height="120" Width="210" Tag="{Binding Guid}" RightTapped="Grid_RightTapped">
                             <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"/>
                             <StackPanel Orientation="Vertical" Height="60" VerticalAlignment="Bottom" Padding="12">
                                 <TextBlock Text="{Binding Describe}" />

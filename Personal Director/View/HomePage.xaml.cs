@@ -23,9 +23,17 @@ namespace Personal_Director
         public HomePage()
         {
             this.InitializeComponent();
+
+            List<Media> mediaScriptList = new List<Media>(),
+                        mediaCabinetList = new List<Media>();
+
+            mediaScriptList.Add(new Media());
+
             this.project = new Project()
             {
-                Name = "123"
+                Name = "123",
+                MediaCabinetList = mediaCabinetList,
+                MediaScriptList = mediaScriptList
             };
         }
 
