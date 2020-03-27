@@ -120,6 +120,14 @@ namespace Personal_Director
 
         private void MediaScriptList_Drop(object sender, DragEventArgs e)
         {
+            Media media = MediaCabinetDataList.FirstOrDefault(i => i.Guid.ToString() == MediaSelectGuid);
+
+            if (!this.MediaScriptDataList.Any())
+            {
+                this.MediaScriptDataList.Insert(0, new Media(media));
+                return;
+            }
+
             var gridView = ((GridView)sender);
 
             //Find the position where item will be dropped in the gridview
@@ -131,8 +139,6 @@ namespace Personal_Director
 
             //Determine the index of the item from the item position (assumed all items are the same size)
             int index = Math.Min(gridView.Items.Count - 1, (int)(pos.X / itemHeight));
-
-            Media media = MediaCabinetDataList.FirstOrDefault(i => i.Guid.ToString() == MediaSelectGuid);
 
             this.MediaScriptDataList.Insert(index, new Media(media));
         }
