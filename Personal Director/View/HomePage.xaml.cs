@@ -27,8 +27,6 @@ namespace Personal_Director
             List<Media> mediaScriptList = new List<Media>(),
                         mediaCabinetList = new List<Media>();
 
-            mediaScriptList.Add(new Media());
-
             this.project = new Project()
             {
                 Name = "123",
