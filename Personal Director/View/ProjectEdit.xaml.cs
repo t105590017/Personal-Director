@@ -111,16 +111,21 @@ namespace Personal_Director
 
         }
 
-        #endregion
-
         private void MediaScriptList_DragOver(object sender, DragEventArgs e)
         {
-            e.AcceptedOperation = DataPackageOperation.Link;
+            if(e.Data != null && e.Data.GetView().Contains("MediaDataGuid"))
+            {
+                e.AcceptedOperation = DataPackageOperation.Link;
+                return;
+            }
+            e.AcceptedOperation = DataPackageOperation.None;
         }
 
-        private void MediaScriptList_Drop(object sender, DragEventArgs e)
+        private async void MediaScriptList_Drop(object sender, DragEventArgs e)
         {
-            Media media = MediaCabinetDataList.FirstOrDefault(i => i.Guid.ToString() == MediaSelectGuid);
+            var guid = await e.Data.GetView().GetTextAsync("MediaDataGuid");
+
+            Media media = MediaCabinetDataList.FirstOrDefault(i => i.Guid.ToString() == guid);
 
             if (!this.MediaScriptDataList.Any())
             {
@@ -143,12 +148,6 @@ namespace Personal_Director
             this.MediaScriptDataList.Insert(index, new Media(media));
         }
 
-        private void Grid_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-            Grid grid = (Grid)sender;
-            this.MediaSelectGuid = grid.Tag.ToString();
-        }
-
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
         {
             this.MediaScriptDataList.Remove(this.MediaScriptDataList.FirstOrDefault(i => i.Guid.ToString() == this.MediaSelectGuid));
@@ -165,5 +164,13 @@ namespace Personal_Director
             };
             flyout?.ShowAt((FrameworkElement)sender, options);
         }
+
+        private void MediaCabinetList_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        {
+            e.Data.SetData("MediaDataGuid", (e.Items[0] as Media).Guid.ToString());
+        }
+        #endregion
+
+
     }
 }
