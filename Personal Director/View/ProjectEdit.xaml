@@ -80,10 +80,10 @@
                 </Button>
             </StackPanel>
 
-            <viewextend:GridViewEx x:Name="MediaCabinetList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" AllowDrop="True" CanReorderItems="True" ItemsSource="{x:Bind Path=MediaCabinetDataList, Mode=TwoWay}">
+            <GridView x:Name="MediaCabinetList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" CanDragItems="True" CanReorderItems="True" ItemsSource="{x:Bind Path=MediaCabinetDataList, Mode=TwoWay}" DragItemsStarting="MediaCabinetList_DragItemsStarting">
                 <GridView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Height="120" Width="210" PointerPressed="Grid_PointerPressed" Tag="{Binding Guid}">
+                        <Grid Height="120" Width="210">
                             <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"/>
                             <StackPanel Orientation="Vertical" Height="60" VerticalAlignment="Bottom" Padding="12">
                                 <TextBlock Text="{Binding Describe}" />
@@ -96,7 +96,7 @@
                         <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal"/>
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
-            </viewextend:GridViewEx>
+            </GridView>
         </Grid>
 
         <Grid Grid.Row="0" Grid.Column="1">
@@ -180,7 +180,7 @@
             </StackPanel>
 
 
-            <GridView x:Name="MediaScriptList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" AllowDrop="True" CanReorderItems="True" ItemsSource="{x:Bind Path=MediaScriptDataList, Mode=TwoWay}"
+            <GridView x:Name="MediaScriptList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" AllowDrop="True" CanReorderItems="True"  CanDragItems="False" IsSwipeEnabled="False" ItemsSource="{x:Bind Path=MediaScriptDataList, Mode=TwoWay}"
                       ScrollViewer.VerticalScrollMode="Disabled"
                       ScrollViewer.VerticalScrollBarVisibility="Hidden"                      
                       ScrollViewer.HorizontalScrollMode="Enabled"
