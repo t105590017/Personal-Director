@@ -44,9 +44,9 @@
         
         <Grid Grid.Row="0" Grid.Column="0" Background="White">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="40"/>
+                <ColumnDefinition x:Name="MediaCabinetLeftArea" Width="40"/>
+                <ColumnDefinition x:Name="MediaCabinetGridArea" Width="1*"/>
+                <ColumnDefinition x:Name="MediaCabinetPutAwayArea" Width="40"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
@@ -67,15 +67,15 @@
                     <TextBlock Margin="5,0,0,0" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center">新增</TextBlock>
                 </StackPanel>
             </Button>
-            <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Background="{x:Null}" Height="30" Width="30" Padding="3,3,3,3">
-                    <StackPanel Orientation="Horizontal">
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF16B;" FontSize="11"/>
+            <StackPanel x:Name="test" Grid.Column="1" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="xxx" Background="{x:Null}" Height="30" Width="30" Padding="2,2,2,2">
+                    <StackPanel Orientation="Horizontal" BorderThickness="0,0,0,2" BorderBrush="#FFEE1515" Padding="4,4,4,2">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF16B;" FontSize="14"/>
                     </StackPanel>
                 </Button>
-                <Button Background="{x:Null}" Height="30" Width="30" Padding="3,3,3,3">
-                    <StackPanel Orientation="Horizontal">
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE80A;" FontSize="11"/>
+                <Button Background="{x:Null}" Height="30" Width="30" Padding="2,2,2,2">
+                    <StackPanel Orientation="Horizontal" BorderThickness="0,0,0,2" Padding="4,4,4,2">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE80A;" FontSize="14"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -83,7 +83,7 @@
             <GridView x:Name="MediaCabinetList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" CanDragItems="True" CanReorderItems="True" ItemsSource="{x:Bind Path=MediaCabinetDataList, Mode=TwoWay}" DragItemsStarting="MediaCabinetList_DragItemsStarting">
                 <GridView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Height="120" Width="210">
+                        <Grid Width="210" Height="Auto">
                             <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"/>
                             <StackPanel Orientation="Vertical" Height="60" VerticalAlignment="Bottom" Padding="12">
                                 <TextBlock Text="{Binding Describe}" />
@@ -93,7 +93,7 @@
                 </GridView.ItemTemplate>
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal"/>
+                        <ItemsWrapGrid Orientation="Horizontal"/>
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
             </GridView>
