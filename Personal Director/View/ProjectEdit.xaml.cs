@@ -106,9 +106,22 @@ namespace Personal_Director
             this.PutAwayMediaCabinetIcon.Glyph = this.IsPutAwayMediaCabinet ? "\uE76B"
                                                                             : "\uE76C";
             this.MediaCabinetArea.Width = this.IsPutAwayMediaCabinet ? new GridLength(5, GridUnitType.Star)
-                                                                     : new GridLength(1, GridUnitType.Star);
+                                                                     : new GridLength(50);
+            MediaCabinetGrid();
+            var panel = (ItemsWrapGrid)MediaCabinetList.ItemsPanelRoot;
+            panel.ItemWidth = this.IsPutAwayMediaCabinet ? 210 : 0;
+        }
 
-
+        private void MediaCabinetGrid()
+        {
+            if (this.IsPutAwayMediaCabinet)
+            {
+                this.MediaCabinetLeftArea.Width = new GridLength(40);
+                this.MediaCabinetGridArea.Width = new GridLength(1, GridUnitType.Star);
+                return;
+            }
+            this.MediaCabinetLeftArea.Width = new GridLength(10);
+            this.MediaCabinetGridArea.Width = new GridLength(0);
         }
 
         private void MediaScriptList_DragOver(object sender, DragEventArgs e)
@@ -169,8 +182,7 @@ namespace Personal_Director
         {
             e.Data.SetData("MediaDataGuid", (e.Items[0] as Media).Guid.ToString());
         }
+
         #endregion
-
-
     }
 }
