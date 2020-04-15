@@ -1,4 +1,4 @@
-﻿using Personal_Director.Model;
+﻿using Personal_Director.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

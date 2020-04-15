@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
-namespace Personal_Director.Model
+namespace Personal_Director.Models
 {
     public class Media
     {
