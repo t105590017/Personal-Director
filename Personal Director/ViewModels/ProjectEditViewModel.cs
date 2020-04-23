@@ -25,7 +25,7 @@ namespace Personal_Director.ViewModels
         {
             get 
             {
-                return this._model.getAllMediaCabinetData;
+                return this._model.getAllMediaCabinetData();
             }
         }
 
@@ -33,7 +33,7 @@ namespace Personal_Director.ViewModels
         {
             get
             {
-                return this._model.getAllMediaScriptData;
+                return this._model.getAllMediaScriptData();
             }
         }
 
