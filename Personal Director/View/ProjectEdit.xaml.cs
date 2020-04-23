@@ -1,6 +1,6 @@
 ﻿using Personal_Director.Models;
+using Personal_Director.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -24,13 +24,15 @@ namespace Personal_Director
     {
         private Project Project { get; set; }
         private bool IsPutAwayMediaCabinet { get; set; } = true;
-        private ObservableCollection<Media> MediaCabinetDataList { get; set; }
-        private ObservableCollection<Media> MediaScriptDataList { get; set; }
         private string MediaSelectGuid { get; set; }
+
+        private ProjectEditViewModel ViewModel { get; set; }
 
         public ProjectEdit()
         {
             this.InitializeComponent();
+            //TODO: models起始位置應該在HomePage
+            this.ViewModel = new ProjectEditViewModel(new Model());
         }
 
         #region event
@@ -54,7 +56,6 @@ namespace Personal_Director
             if (e.Parameter is Project)
             {
                 Project = (Project)e.Parameter;
-                SetViewData(Project);
             }
             else
             {
@@ -63,12 +64,7 @@ namespace Personal_Director
             base.OnNavigatedTo(e);
         }
 
-        private void SetViewData(Project viewModel)
-        {
-            MediaScriptDataList = new ObservableCollection<Media>(viewModel.MediaScriptList);
-            MediaCabinetDataList = new ObservableCollection<Media>(viewModel.MediaCabinetList);
-        }
-
+        //新增媒體至媒體櫃
         private async void AddMedia_ClickAsync(object sender, RoutedEventArgs e)
         {
             var picker = new Windows.Storage.Pickers.FileOpenPicker();
@@ -87,12 +83,11 @@ namespace Personal_Director
                 const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
                 var image = new BitmapImage();
                 image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
-                this.MediaCabinetDataList.Add(new Media()
+                this.ViewModel.AddMediaIntoCabinet(new Media()
                 {
                     Thumbnail = image,
                     Describe = file.Name
                 });
-
             }
             else
             {
@@ -138,11 +133,10 @@ namespace Personal_Director
         {
             var guid = await e.Data.GetView().GetTextAsync("MediaDataGuid");
 
-            Media media = MediaCabinetDataList.FirstOrDefault(i => i.Guid.ToString() == guid);
-
-            if (!this.MediaScriptDataList.Any())
+            Media media = this.ViewModel.GridViewMediaCabinetList.FirstOrDefault(i => i.Guid.ToString() == guid);
+            if (!this.ViewModel.GridViewMediaScriptDataList.Any())
             {
-                this.MediaScriptDataList.Insert(0, new Media(media));
+                this.ViewModel.InsertMediaIntoCabinet(0, new Media(media));
                 return;
             }
 
@@ -158,12 +152,12 @@ namespace Personal_Director
             //Determine the index of the item from the item position (assumed all items are the same size)
             int index = Math.Min(gridView.Items.Count - 1, (int)(pos.X / itemHeight));
 
-            this.MediaScriptDataList.Insert(index, new Media(media));
+            this.ViewModel.InsertMediaIntoCabinet(index, new Media(media));
         }
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            this.MediaScriptDataList.Remove(this.MediaScriptDataList.FirstOrDefault(i => i.Guid.ToString() == this.MediaSelectGuid));
+            this.ViewModel.RemoveMediaFromScript(this.MediaSelectGuid);
         }
 
         private void Grid_RightTapped(object sender, RightTappedRoutedEventArgs e)
@@ -182,7 +176,6 @@ namespace Personal_Director
         {
             e.Data.SetData("MediaDataGuid", (e.Items[0] as Media).Guid.ToString());
         }
-
         #endregion
     }
 }

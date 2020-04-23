@@ -80,7 +80,7 @@
                 </Button>
             </StackPanel>
 
-            <GridView x:Name="MediaCabinetList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" CanDragItems="True" CanReorderItems="True" ItemsSource="{x:Bind Path=MediaCabinetDataList, Mode=TwoWay}" DragItemsStarting="MediaCabinetList_DragItemsStarting">
+            <GridView x:Name="MediaCabinetList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" CanDragItems="True" CanReorderItems="True" ItemsSource="{x:Bind Path=ViewModel.GridViewMediaCabinetList, Mode=OneWay}" DragItemsStarting="MediaCabinetList_DragItemsStarting">
                 <GridView.ItemTemplate>
                     <DataTemplate>
                         <Grid Width="210" Height="Auto">
@@ -180,7 +180,7 @@
             </StackPanel>
 
 
-            <GridView x:Name="MediaScriptList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" AllowDrop="True" CanReorderItems="True"  CanDragItems="False" IsSwipeEnabled="False" ItemsSource="{x:Bind Path=MediaScriptDataList, Mode=TwoWay}"
+            <GridView x:Name="MediaScriptList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" AllowDrop="True" CanReorderItems="True"  CanDragItems="False" IsSwipeEnabled="False" ItemsSource="{x:Bind Path=ViewModel.GridViewMediaScriptDataList, Mode=OneWay}"
                       ScrollViewer.VerticalScrollMode="Disabled"
                       ScrollViewer.VerticalScrollBarVisibility="Hidden"                      
                       ScrollViewer.HorizontalScrollMode="Enabled"
