@@ -15,7 +15,6 @@ namespace Personal_Director.Models
         ObservableCollection<Media> _mediaScriptData;
 
 
-
         public Model()
         {
             this._mediaCabinetData = new ObservableCollection<Media>();
@@ -28,21 +27,15 @@ namespace Personal_Director.Models
         }
 
         //取得所有媒體櫃中的資料
-        public ObservableCollection<Media> getAllMediaCabinetData 
+        public ObservableCollection<Media> getAllMediaCabinetData()
         {
-            get
-            {
-                return this._mediaCabinetData;
-            }
+            return this._mediaCabinetData;
         }
 
         //取得所有分鏡腳本中的資料
-        public ObservableCollection<Media> getAllMediaScriptData
+        public ObservableCollection<Media> getAllMediaScriptData()
         {
-            get
-            {
-                return this._mediaScriptData;
-            }
+            return this._mediaScriptData;
         }
 
         public void AddMediaIntoCabinetData (Media media)
