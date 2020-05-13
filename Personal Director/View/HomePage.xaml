@@ -5,15 +5,152 @@
     xmlns:local="using:Personal_Director"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    mc:Ignorable="d" Background="#FFEEE1E1" >
 
-    <Page.TopAppBar>
+    <!--<Page.TopAppBar>
         <CommandBar>
             <AppBarButton Icon="OpenFile" Label="Open"/>
             <AppBarButton x:Name="NewProject" Icon="Add" Label="New" Click="NewProject_Click"/>
         </CommandBar>
-    </Page.TopAppBar>
+    </Page.TopAppBar>-->
+
     
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" HorizontalAlignment="Stretch"  Margin="0,0,0,0" VerticalAlignment="Bottom" RenderTransformOrigin="0.521,0.519">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="0.5*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="11*"/>
+        </Grid.RowDefinitions>
+
+        <Grid  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left">
+            <Button x:Name="Picture" Background="{x:Null}" Height="30" Width="55" Padding="3,3,3,3" Margin="0,5.4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Margin="5,0,0,0" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center">相片</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button x:Name="VideoProject" Background="{x:Null}" Height="30" Width="82" Padding="3,3,3,3" Margin="75,5.4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" Width="55" Margin="0,0,0,0">影片專案</TextBlock>
+                </StackPanel>
+            </Button>
+            <TextBox x:Name="textBox" HorizontalAlignment="Left" Margin="179,9.4,0,0" PlaceholderText="搜尋地點、人員或事物..." FontSize="12" VerticalAlignment="Top" Height="32" Width="180" Grid.Row="1"/>
+            <FontIcon x:Name="PutAwayMediaCabinetIcon" FontFamily="Segoe MDL2 Assets" Glyph="&#xE721;" FontSize="15" RenderTransformOrigin="0.491,3.1" Margin="320,0,0,0" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        </Grid>
+        <Grid  Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Right">
+            <CommandBar HorizontalAlignment="Right" VerticalAlignment="Top" Background="White" >
+                <AppBarButton Icon="OpenFile" Label="Open"/>
+                <AppBarButton x:Name="NewProject" Icon="Add" Label="New" Click="NewProject_Click"/>
+                <AppBarButton Icon="Video" LabelPosition="Default" Label="新增影片"/>
+                <AppBarButton Icon="SelectAll" Label="選取" Click="AppBarButton_Click"/>
+                <AppBarButton Icon="Import" Label="匯入" />
+                <AppBarButton Icon="AddFriend" Label=""/>
+            </CommandBar>
+        </Grid>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="150,89.4,0,0" Grid.Row="1" Text="您的影片專案" TextWrapping="Wrap" VerticalAlignment="Top" SelectionChanged="TextBlock_SelectionChanged"/>
+        <FontIcon x:Name="PutAwayMediaCabinetIcon_Copy" FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B2;" FontSize="15" RenderTransformOrigin="0.491,3.1" Margin="123,90.4,1233.4,644" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Button x:Name="appBarToggleButton"  Background="DodgerBlue"  HorizontalAlignment="Left"   Margin="134,136.4,0,0" Grid.Row="1" VerticalAlignment="Top" Height="169" Width="241" Click="NewProject_Click"/>
+        <FontIcon x:Name="PutAwayMediaCabinetIcon_Copy1" FontFamily="Segoe MDL2 Assets" Glyph="&#xE948;" FontSize="15" Foreground="White" RenderTransformOrigin="0.491,3.1" Margin="312,246.4,1018.4,460" Grid.Row="1"/>
+        <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="154,258.4,0,0" Grid.Row="1" Text="新的影片專案" FontSize="12" Foreground="White" TextWrapping="Wrap" VerticalAlignment="Top" SelectionChanged="TextBlock1_SelectionChanged"/>
+        <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="156,278.4,0,0" Grid.Row="1" Text="開始一個新專案" FontSize="8" Foreground="White" TextWrapping="Wrap" VerticalAlignment="Top" SelectionChanged="TextBlock1_SelectionChanged"/>
+
+        <Grid Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="79*"/>
+                <RowDefinition Height="671*"/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="textBlock5"    Margin="0,5,150,0" Text="排序方式: " TextWrapping="Wrap" VerticalAlignment="Top" SelectionChanged="TextBlock_SelectionChanged" />
+
+            <ComboBox x:Name="comboBox" HorizontalAlignment="Left"   VerticalAlignment="Top" Width="116" SelectionChanged="FlipView_SelectionChanged" SelectedIndex="0" Margin="84,-2,0,0">
+                <TextBlock Text="已修改" FontFamily="Arial"/>
+                <TextBlock Text="最新" FontFamily="Arial"/>
+                <TextBlock Text="最舊" FontFamily="Arial"/>
+                <TextBlock Text="字母順序" FontFamily="Arial"/>
+            </ComboBox>
+        </Grid>
+        <!--
+        <TextBlock x:Name="textBlock6" HorizontalAlignment="Left" Margin="150,377.4,0,0" Grid.Row="1" Text="已為您建立" TextWrapping="Wrap" VerticalAlignment="Top" SelectionChanged="TextBlock_SelectionChanged"/>
+        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B9;" FontSize="15" RenderTransformOrigin="0.491,3.1" Margin="123,378.4,1233.4,356" Grid.Row="1"/>
+        <AppBarToggleButton x:Name="appBarToggleButton2" HorizontalAlignment="Left" Background="LightGray" Margin="135,430.4,0,0" Grid.Row="1" VerticalAlignment="Top" Height="169" Width="241" PointerEntered="button_PointerEntered_2" PointerExited="button_PointerExited_2">
+
+
+        </AppBarToggleButton>
+        <Rectangle HorizontalAlignment="Left" Fill="WhiteSmoke" Height="55" Margin="135,544.4,0,0" Grid.Row="1" VerticalAlignment="Top" Width="242"/>
+        <CheckBox x:Name="checkBox2"  HorizontalAlignment="Left" Margin="347,430.4,0,0" Grid.Row="1" VerticalAlignment="Top" Width="24" Visibility="Collapsed"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="154,556.4,0,0" Grid.Row="1" Text="新增影片" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Top" SelectionChanged="TextBlock1_SelectionChanged"/>
+        <TextBlock x:Name="textBlock8" HorizontalAlignment="Left" Margin="178,577.4,0,0" Grid.Row="1" Text="建立日期 : 2020 年 2 月 30 日" FontSize="8" TextWrapping="Wrap" VerticalAlignment="Top" SelectionChanged="TextBlock1_SelectionChanged"/>
+        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE714;" FontSize="15" RenderTransformOrigin="0.491,3.1" Margin="150,573.4,1206.4,161" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+        <Button x:Name="reserve_btn" Background="DodgerBlue" Height="30" Width="121" Padding="3,3,3,3" Margin="135,514.4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1" Visibility="Collapsed">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock FontSize="12" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="23" Margin="0,0,0,0"><Run Text="保留"/></TextBlock>
+            </StackPanel>
+        </Button>
+
+        <Button x:Name="remove_btn" Background="Gray" Height="30" Width="121" Padding="3,3,3,3" Margin="254,514.4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1" Visibility="Collapsed">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock FontSize="12" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="23" Margin="0,0,0,0"><Run Text="移除"/></TextBlock>
+            </StackPanel>
+        </Button>-->
+
+        <Rectangle x:Name="selectionBar" HorizontalAlignment="Center" Fill="Black" Height="30" VerticalAlignment="Top" Width="1495" Grid.ColumnSpan="3" Margin="0,40.4,0,0" Grid.Row="1" Visibility="Collapsed"/>
+        <Button x:Name="selectionCancel_btn" Background="Gray" Height="30" Padding="3,3,3,3" Margin="46.6,40.4,0.2,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1"  Visibility="Collapsed" Click="SelectionCancel_btn_Click">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock FontSize="12" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="23" Margin="0,0,0,0"><Run Text="取消"/></TextBlock>
+            </StackPanel>
+        </Button>
+        <Button x:Name="selection_btn"  Height="30" Padding="3,3,3,3" Margin="1356,40.4,47,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" RenderTransformOrigin="0.798,0.505" Grid.ColumnSpan="2" Grid.Row="1" Visibility="Collapsed">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock FontSize="12" Foreground="Gray" HorizontalAlignment="Center" VerticalAlignment="Center" Width="23" Margin="0,0,0,0"><Run Text="移除"/></TextBlock>
+
+            </StackPanel>
+        </Button>
+        <FontIcon  x:Name="selection_btn2" FontFamily="Segoe MDL2 Assets" Glyph="&#xE74D;" FontSize="15" Foreground="Gray" RenderTransformOrigin="0.491,3.1" Margin="1356,46.4,0.4,688" Grid.Row="1" Visibility="Collapsed"/>
+
+
+        <Grid HorizontalAlignment="Left"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Top">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <FontIcon FontFamily="Segoe MDL2 Assets"  Margin="30,53,0,0" Glyph="&#xE8B9;" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+            <TextBlock  Text="已為您建立"  Margin="50,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top"></TextBlock>
+
+            <GridView x:Name="ProjectList" SelectionMode="Single" Margin="50,100,0,0" CanReorderItems="True" ItemsSource="{x:Bind Path=ProjectDataList, Mode=OneWay}"
+                      HorizontalContentAlignment="Center">
+                <GridView.ItemTemplate >
+                    <DataTemplate x:DataType="local:HomePage">
+                        <Grid  Height="180"  Width="280" Background="LightGray">
+                            <StackPanel Orientation="Vertical" Height="55" VerticalAlignment="Bottom" Background="WhiteSmoke" Padding="8">
+                                <TextBlock FontSize="12" Text="{Binding Name}" />
+                                <TextBlock FontSize="8" Text="建立日期 : " Margin="5,3,0,0"/>
+                            </StackPanel >
+                            <CheckBox VerticalAlignment ="Top" HorizontalAlignment="Left" Margin="5,0,0,0" Click="CheckBox_Click"/>
+                        </Grid>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsWrapGrid  Orientation="Horizontal" Margin="-15,0,-15,0"/>
+                    </ItemsPanelTemplate>
+
+                </GridView.ItemsPanel>
+                <GridView.ItemContainerStyle>
+                    <Style TargetType="GridViewItem">
+                        <Setter Property="Margin" Value="15,15,15,15"/>
+                    </Style>
+                </GridView.ItemContainerStyle>
+
+            </GridView>
+        </Grid>
+
+
+    </Grid>
 </Page>
