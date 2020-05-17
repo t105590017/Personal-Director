@@ -8,13 +8,13 @@ namespace Personal_Director.Models
 {
     public class StoryBoard
     {
-        private Media _mediaSource;
+        public Media MediaSource { get;}
 
         private List<Effect> _effects;
 
         public StoryBoard(Media media)
         {
-            this._mediaSource = media;
+            this.MediaSource = media;
             this._effects = new List<Effect>();
         }
 

@@ -1,6 +1,7 @@
 ﻿using Personal_Director.Models;
 using Personal_Director.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -95,11 +96,13 @@ namespace Personal_Director
                 const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
                 var image = new BitmapImage();
                 image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
-                this.ViewModel.AddMediaIntoCabinet(new Media()
+                Media media = new Media()
                 {
                     Thumbnail = image,
                     Describe = file.Name
-                });
+                };
+                this.ViewModel.AddMediaIntoCabinet(media);
+                this.ViewModel.AddMediaIntoProjectInfo(file.Path, media);
             }
             else
             {
@@ -146,9 +149,11 @@ namespace Personal_Director
             var guid = await e.Data.GetView().GetTextAsync("MediaDataGuid");
 
             Media media = this.ViewModel.GridViewMediaCabinetList.FirstOrDefault(i => i.Guid.ToString() == guid);
-            if (!this.ViewModel.GridViewMediaScriptDataList.Any())
+            StoryBoard storyBoard = new StoryBoard(media);
+            if (!this.ViewModel.GridViewStoryBoardScriptDataList.Any())
             {
-                this.ViewModel.InsertMediaIntoCabinet(0, new Media(media));
+                this.ViewModel.InsertStoryBoardIntoScript(0, storyBoard.MediaSource);
+                this.ViewModel.AddStoryBoardIntoProjectInfo(storyBoard);
                 return;
             }
 
@@ -164,7 +169,8 @@ namespace Personal_Director
             //Determine the index of the item from the item position (assumed all items are the same size)
             int index = Math.Min(gridView.Items.Count - 1, (int)(pos.X / itemHeight));
 
-            this.ViewModel.InsertMediaIntoCabinet(index, new Media(media));
+            this.ViewModel.InsertStoryBoardIntoScript(index, storyBoard.MediaSource);
+            this.ViewModel.AddStoryBoardIntoProjectInfo(storyBoard);
         }
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
@@ -187,6 +193,42 @@ namespace Personal_Director
         private void MediaCabinetList_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
             e.Data.SetData("MediaDataGuid", (e.Items[0] as Media).Guid.ToString());
+        }
+
+        //按下儲存專案, 選擇導出的路徑並儲存專案
+        private async void SaveProject_Click(object sender, RoutedEventArgs e)
+        {
+            var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+            savePicker.SuggestedStartLocation =
+                Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            savePicker.FileTypeChoices.Add("Personal Director 專案檔", new List<string>() { ".proj" });
+            savePicker.SuggestedFileName = "Personal-Director-project";
+
+            Windows.Storage.StorageFile file = await savePicker.PickSaveFileAsync();
+            if (file != null)
+            {
+                //禁止更新文件的遠程版本，直到完成更改並call CompleteUpdatesAsync為止。
+                Windows.Storage.CachedFileManager.DeferUpdates(file);
+                //寫入檔案
+                await Windows.Storage.FileIO.WriteTextAsync(file, this.ViewModel.GetProjectInfoToSaving());
+                //跟Windows確認檔案狀態
+                Windows.Storage.Provider.FileUpdateStatus status =
+                    await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
+                //如果成功儲存
+                if (status == Windows.Storage.Provider.FileUpdateStatus.Complete)
+                {
+                    //this.textBlock.Text = "File " + file.Name + " was saved.";
+                }
+                else
+                {
+                    //this.textBlock.Text = "File " + file.Name + " couldn't be saved.";
+                }
+            }
+            else
+            {
+                //取消動作
+                //this.textBlock.Text = "Operation cancelled.";
+            }
         }
         #endregion
     }

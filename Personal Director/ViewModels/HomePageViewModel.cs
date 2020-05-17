@@ -19,11 +19,12 @@ namespace Personal_Director.ViewModels
             this._model = model;
         }
 
+        //開啟專案
         public bool OpenProject(string jsonString)
         {
-            //TODO: 防呆待寫
+            //TODO: 專案檔案偵錯防呆待寫
             Project project = new Project(jsonString);
-            this._model.SetProject(project);
+            this._model.Project = project;
             return true;
         }
 
@@ -31,6 +32,18 @@ namespace Personal_Director.ViewModels
         public List<string> GetCabinetPathFromProject()
         {
             return this._model.GetCabinetPathFromProject();
+        }
+
+        //從專案檔獲取媒體櫃影片的Guid
+        public List<string> GetCabinetGuidFromProject()
+        {
+            return this._model.GetCabinetGuidFromProject();
+        }
+
+        //從專案檔獲取分鏡腳本內MediaSource的Guid
+        public List<Guid> GetMediaSourceGuidFromProject()
+        {
+            return this._model.GetMediaSourceGuidFromProject();
         }
 
         //增加媒體至媒體櫃

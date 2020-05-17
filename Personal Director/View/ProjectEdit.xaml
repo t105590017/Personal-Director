@@ -97,6 +97,7 @@
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
             </GridView>
+            <Button x:Name="SaveProject" Content="儲存專案" Click="SaveProject_Click" Grid.Column="1" Margin="138,10,0,0" VerticalAlignment="Top" Background="#33FFFFFF"/>
         </Grid>
 
         <Grid Grid.Row="0" Grid.Column="1">
@@ -181,17 +182,17 @@
             </StackPanel>
 
 
-            <GridView x:Name="MediaScriptList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" AllowDrop="True" CanReorderItems="True"  CanDragItems="False" IsSwipeEnabled="False" ItemsSource="{x:Bind Path=ViewModel.GridViewMediaScriptDataList, Mode=OneWay}"
+            <GridView x:Name="StoryBoardScriptList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" AllowDrop="True" CanReorderItems="True"  CanDragItems="False" IsSwipeEnabled="False" ItemsSource="{x:Bind Path=ViewModel.GridViewStoryBoardScriptDataList, Mode=OneWay}"
                       ScrollViewer.VerticalScrollMode="Disabled"
                       ScrollViewer.VerticalScrollBarVisibility="Hidden"                      
                       ScrollViewer.HorizontalScrollMode="Enabled"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalContentAlignment="Center" Drop="MediaScriptList_Drop" DragOver="MediaScriptList_DragOver">
                 <GridView.ItemTemplate>
                     <DataTemplate x:Name="ImageOverlayDataTemplate" >
-                        <Grid Height="120" Width="210" Tag="{Binding Guid}" RightTapped="Grid_RightTapped">
-                            <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"/>
+                        <Grid Height="120" Width="210" Tag="{Binding MediaSource.Guid}" RightTapped="Grid_RightTapped">
+                            <Image Source="{Binding MediaSource.Thumbnail}" Stretch="UniformToFill"/>
                             <StackPanel Orientation="Vertical" Height="60" VerticalAlignment="Bottom" Padding="12">
-                                <TextBlock Text="{Binding Describe}" />
+                                <TextBlock Text="{Binding MediaSource.Describe}" />
                             </StackPanel>
                         </Grid>
                     </DataTemplate>

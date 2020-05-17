@@ -2,6 +2,7 @@
 using Personal_Director.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -210,32 +211,43 @@ namespace Personal_Director
                 string text = await Windows.Storage.FileIO.ReadTextAsync(file);
                 bool isProjectSetupSucess = this._viewModel.OpenProject(text);
                 Console.WriteLine(isProjectSetupSucess);
+
+                //匯入媒體櫃
+                List<string> mediaCabinetPath = this._viewModel.GetCabinetPathFromProject();
+                List<string> mediaCabinetGuid = this._viewModel.GetCabinetGuidFromProject();
+                for (int i = 0; i < mediaCabinetPath.Count; i++)
+                {
+                    file = await Windows.Storage.StorageFile.GetFileFromPathAsync(mediaCabinetPath[i]);
+                    if (file != null)
+                    {
+                        var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                        const uint requestedSize = 190;
+                        const ThumbnailMode thumbnailMode = ThumbnailMode.VideosView;
+                        const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
+                        var image = new BitmapImage();
+                        image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
+                        this._viewModel.AddMediaIntoCabinet(new Media(Guid.Parse(mediaCabinetGuid[i]))
+                        {
+                            Thumbnail = image,
+                            Describe = file.Name
+                        });
+                    }
+                }
+
+                //匯入分鏡腳本
+                List<Guid> mediaSourceGuids = this._viewModel.GetMediaSourceGuidFromProject();
+                ObservableCollection<Media> mediaCabinet = this._model.getAllMediaCabinetData();
+                for (int i = 0; i < mediaSourceGuids.Count; i++)
+                {
+                    StoryBoard storyBoard = new StoryBoard(mediaCabinet.FirstOrDefault(x => x.Guid == mediaSourceGuids[i]));
+                    this._model.AddStoryBoardIntoScriptData(storyBoard);
+                }
+                this.Frame.Navigate(typeof(ProjectEdit), _model);
             }
             else
             {
                 this.textBlock.Text = "Operation cancelled.";
             }
-            //匯入媒體櫃
-            List<string> mediaCabinetPath = this._viewModel.GetCabinetPathFromProject();
-            foreach (string path in mediaCabinetPath)
-            {
-                file = await Windows.Storage.StorageFile.GetFileFromPathAsync(path);
-                if (file != null)
-                {
-                    var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
-                    const uint requestedSize = 190;
-                    const ThumbnailMode thumbnailMode = ThumbnailMode.VideosView;
-                    const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
-                    var image = new BitmapImage();
-                    image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
-                    this._viewModel.AddMediaIntoCabinet(new Media()
-                    {
-                        Thumbnail = image,
-                        Describe = file.Name
-                    });
-                }
-            }
-            this.Frame.Navigate(typeof(ProjectEdit), _model);
         }
     }
 }
