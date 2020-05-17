@@ -14,16 +14,23 @@ namespace Personal_Director.Models
 
         ObservableCollection<Media> _mediaScriptData;
 
+        Project _project;
 
         public Model()
         {
             this._mediaCabinetData = new ObservableCollection<Media>();
             this._mediaScriptData = new ObservableCollection<Media>();
-            //TODO: 初始化假資料
-            this._mediaCabinetData.Add(new Media
-            {
-                Describe = "123"
-            });
+            this._project = new Project();
+        }
+
+        public void SetProject(Project project) 
+        {
+            this._project = project;
+        }
+
+        public List<string> GetCabinetPathFromProject()
+        {
+            return this._project.GetMediaCabinetPath();
         }
 
         //取得所有媒體櫃中的資料

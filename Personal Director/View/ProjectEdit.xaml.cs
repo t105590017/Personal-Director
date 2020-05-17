@@ -32,7 +32,19 @@ namespace Personal_Director
         {
             this.InitializeComponent();
             //TODO: models起始位置應該在HomePage
-            this.ViewModel = new ProjectEditViewModel(new Model());
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter is Model)
+            {
+                this.ViewModel = new ProjectEditViewModel((Model)e.Parameter);
+            }
+            else
+            {
+                throw new Exception("Model passing error!");
+            }
+            base.OnNavigatedTo(e);
         }
 
         #region event
@@ -51,18 +63,18 @@ namespace Personal_Director
             return false;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            if (e.Parameter is Project)
-            {
-                Project = (Project)e.Parameter;
-            }
-            else
-            {
-                throw new Exception("ne project !!");
-            }
-            base.OnNavigatedTo(e);
-        }
+        //protected override void OnNavigatedTo(NavigationEventArgs e)
+        //{
+        //    if (e.Parameter is Project)
+        //    {
+        //        Project = (Project)e.Parameter;
+        //    }
+        //    else
+        //    {
+        //        throw new Exception("ne project !!");
+        //    }
+        //    base.OnNavigatedTo(e);
+        //}
 
         //新增媒體至媒體櫃
         private async void AddMedia_ClickAsync(object sender, RoutedEventArgs e)
@@ -91,7 +103,7 @@ namespace Personal_Director
             }
             else
             {
-                var x = "Operation cancelled.";
+                //var x = "Operation cancelled.";
             }
         }
 

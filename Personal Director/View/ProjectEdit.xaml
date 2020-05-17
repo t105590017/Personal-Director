@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewextend="using:Personal_Director.ViewExtend"
-    mc:Ignorable="d" Background="#FFEEE1E1">
+    mc:Ignorable="d" Background="White" RequestedTheme="Default" Visibility="Visible">
 
     <Page.TopAppBar>
         <CommandBar>
@@ -41,7 +41,7 @@
                 </CommandBarFlyout.SecondaryCommands>
             </CommandBarFlyout>
         </Grid.Resources>
-        
+
         <Grid Grid.Row="0" Grid.Column="0" Background="White">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="MediaCabinetLeftArea" Width="40"/>
@@ -123,7 +123,8 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="26"/>
+                <ColumnDefinition Width="14"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="20"/>
@@ -133,7 +134,7 @@
             </Grid.RowDefinitions>
             <TextBlock Grid.Column="1" Grid.Row="1" Text="分鏡腳本" TextWrapping="Wrap" FontWeight="Bold" Width="74" VerticalAlignment="Center" HorizontalAlignment="Left" Height="19"/>
 
-            <StackPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
+            <StackPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" Orientation="Horizontal" Margin="1018,0,0,0">
                 <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE78A;" FontSize="14" HorizontalAlignment="Right"/>
@@ -164,7 +165,7 @@
                         <TextBlock Margin="5,0,0,0" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">速度</TextBlock>
                     </StackPanel>
                 </Button>
-                
+
                 <AppBarSeparator/>
 
                 <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
