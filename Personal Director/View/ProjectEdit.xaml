@@ -134,9 +134,9 @@
             <TextBlock Grid.Column="1" Grid.Row="1" Text="分鏡腳本" TextWrapping="Wrap" FontWeight="Bold" Width="74" VerticalAlignment="Center" HorizontalAlignment="Left" Height="19"/>
 
             <StackPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Clip_Click">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE78A;" FontSize="14" HorizontalAlignment="Right"/>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE78A;" FontSize="14" HorizontalAlignment="Center" Height="16" Margin="0,0,0,0" VerticalAlignment="Top"/>
                         <TextBlock Margin="5,0,0,0" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">修剪</TextBlock>
                     </StackPanel>
                 </Button>

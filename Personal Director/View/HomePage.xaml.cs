@@ -1,4 +1,5 @@
 ﻿using Personal_Director.Models;
+using Personal_Director.View;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -98,6 +99,8 @@ namespace Personal_Director
             }
             return false;
         }
+
+        
 
         private void NewProject_Click(object sender, RoutedEventArgs e)
         {

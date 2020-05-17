@@ -1,4 +1,5 @@
 ﻿using Personal_Director.Models;
+using Personal_Director.View;
 using Personal_Director.ViewModels;
 using System;
 using System.Collections.ObjectModel;
@@ -63,6 +64,8 @@ namespace Personal_Director
             }
             base.OnNavigatedTo(e);
         }
+
+        
 
         //新增媒體至媒體櫃
         private async void AddMedia_ClickAsync(object sender, RoutedEventArgs e)
@@ -175,6 +178,13 @@ namespace Personal_Director
         private void MediaCabinetList_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
             e.Data.SetData("MediaDataGuid", (e.Items[0] as Media).Guid.ToString());
+        }
+
+        private void Clip_Click(object sender, RoutedEventArgs e)
+        {
+
+            //this.Frame.Navigate(typeof(ClipPage));
+            this.Frame.Navigate(typeof(ClipEditPage));
         }
         #endregion
     }
