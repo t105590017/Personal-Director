@@ -88,8 +88,8 @@ namespace Production.MediaProcess
         /// <summary>
         /// 影片剪裁
         /// </summary>
-        /// <param name="begin"></param>
-        /// <param name="end"></param>
+        /// <param name="begin">開始時間</param>
+        /// <param name="end">結束時間</param>
         /// <returns></returns>
         public VideoHandlerObject CutVideo(TimeSpan begin, TimeSpan end) 
         {
@@ -115,11 +115,11 @@ namespace Production.MediaProcess
         /// <summary>
         /// 加字幕 給座標
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="fontcolor"></param>
-        /// <param name="fontsize"></param>
+        /// <param name="text">字幕</param>
+        /// <param name="x">x座標</param>
+        /// <param name="y">y座標</param>
+        /// <param name="fontcolor">文字顏色</param>
+        /// <param name="fontsize">文字大小</param>
         /// <returns></returns>
         public VideoHandlerObject AddTextToVideo(string text, int x, int y, Color fontcolor, int fontsize = 24)
         {
@@ -129,11 +129,10 @@ namespace Production.MediaProcess
         /// <summary>
         /// 加字幕 給Enum
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="fontcolor"></param>
-        /// <param name="fontsize"></param>
+        /// <param name="text">字幕</param>
+        /// <param name="position">位置列舉</param>
+        /// <param name="fontcolor">文字顏色</param>
+        /// <param name="fontsize">文字大小</param>
         /// <returns></returns>
         public VideoHandlerObject AddTextToVideo(string text, VideoPosition position, Color fontcolor, int fontsize = 24)
         {
@@ -143,11 +142,10 @@ namespace Production.MediaProcess
         /// <summary>
         /// 加字幕
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="fontcolor"></param>
-        /// <param name="fontsize"></param>
+        /// <param name="text">字幕</param>
+        /// <param name="position">位置</param>
+        /// <param name="fontcolor">文字顏色</param>
+        /// <param name="fontsize">文字大小</param>
         /// <returns></returns>
         private VideoHandlerObject AddTextToVideo(string text, string position, Color fontcolor, int fontsize = 24)
         {
@@ -178,7 +176,7 @@ namespace Production.MediaProcess
         /// <summary>
         /// 匯出
         /// </summary>
-        /// <param name="guids"></param>
+        /// <param name="guids">分鏡的所有guid</param>
         /// <returns></returns>
         public VideoHandlerObject ConcatenateVideos(string[] guids)
         {
