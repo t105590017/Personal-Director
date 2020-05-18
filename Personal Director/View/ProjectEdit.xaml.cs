@@ -1,5 +1,6 @@
 ﻿using Personal_Director.Models;
 using Personal_Director.ViewModels;
+using Production.MediaProcess;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,6 +10,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -46,6 +48,28 @@ namespace Personal_Director
                 throw new Exception("Model passing error!");
             }
             base.OnNavigatedTo(e);
+        }
+
+        private List<string> guids = new List<string>();
+        private async void ffmpegTest_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
+            picker.FileTypeFilter.Add("*");
+            StorageFile file = await picker.PickSingleFileAsync();
+
+            if (file != null)
+            {
+                Guid guid = Guid.NewGuid();
+                guids.Add(guid.ToString());
+
+                VideoHandler.SetSource(guid, file.Path)
+                            .CutVideo(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20))
+                            .AddTextToVideo(guid.ToString(), Production.Enum.VideoPosition.Center, System.Drawing.Color.Blue, 72);
+                if(guids.Count() == 3)
+                    VideoHandler.Export(guids.ToArray());
+            }
         }
 
         #region event
