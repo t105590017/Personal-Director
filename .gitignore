@@ -6,3 +6,6 @@
 /Personal Director/bin
 /Personal Director/obj
 /.vs/Personal Director/v15
+/.vs/Personal Director/DesignTimeBuild
+/Production/bin/Debug/netstandard2.0
+/Production/obj
