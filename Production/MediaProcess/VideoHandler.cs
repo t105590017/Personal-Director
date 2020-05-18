@@ -29,8 +29,8 @@ namespace Production.MediaProcess
         /// <summary>
         /// 取得
         /// </summary>
-        /// <param name="guid"></param>
-        /// <param name="fileType"></param>
+        /// <param name="guid">分鏡guid</param>
+        /// <param name="fileType">Source Path</param>
         /// <returns></returns>
         public static VideoHandlerObject SetSource(Guid guid, string fileType)
         {
@@ -41,7 +41,7 @@ namespace Production.MediaProcess
         /// <summary>
         /// 匯出
         /// </summary>
-        /// <param name="guids"></param>
+        /// <param name="guids">分鏡的所有guid</param>
         /// <returns></returns>
         public static VideoHandlerObject Export(string[] guids)
         {
