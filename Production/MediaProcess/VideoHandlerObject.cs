@@ -111,7 +111,7 @@ namespace Production.MediaProcess
 
             return this;
         }
-        
+
         /// <summary>
         /// 加字幕 給座標
         /// </summary>
@@ -119,11 +119,12 @@ namespace Production.MediaProcess
         /// <param name="x">x座標</param>
         /// <param name="y">y座標</param>
         /// <param name="fontcolor">文字顏色</param>
+        /// <param name="fontfile">C:/Windows/Fonts/ 下的 font file name</param>
         /// <param name="fontsize">文字大小</param>
         /// <returns></returns>
-        public VideoHandlerObject AddTextToVideo(string text, int x, int y, Color fontcolor, int fontsize = 24)
+        public VideoHandlerObject AddTextToVideo(string text, int x, int y, Color fontcolor, string fontfile = "msjh.ttc", int fontsize = 24)
         {
-            return this.AddTextToVideo(text, $"x={x.ToString()}:y={y.ToString()}:", fontcolor, fontsize);
+            return this.AddTextToVideo(text, $"x={x.ToString()}:y={y.ToString()}:", fontcolor, fontfile, fontsize);
         }
 
         /// <summary>
@@ -132,11 +133,12 @@ namespace Production.MediaProcess
         /// <param name="text">字幕</param>
         /// <param name="position">位置列舉</param>
         /// <param name="fontcolor">文字顏色</param>
+        /// <param name="fontfile">C:/Windows/Fonts/ 下的 font file name</param>
         /// <param name="fontsize">文字大小</param>
         /// <returns></returns>
-        public VideoHandlerObject AddTextToVideo(string text, VideoPosition position, Color fontcolor, int fontsize = 24)
+        public VideoHandlerObject AddTextToVideo(string text, VideoPosition position, Color fontcolor, string fontfile = "msjh.ttc", int fontsize = 24)
         {
-            return this.AddTextToVideo(text, $"{EnumHelper.GetDescription<VideoPosition>(position.ToString())}", fontcolor, fontsize);
+            return this.AddTextToVideo(text, $"{EnumHelper.GetDescription<VideoPosition>(position.ToString())}", fontcolor, fontfile, fontsize);
         }
 
         /// <summary>
@@ -145,14 +147,16 @@ namespace Production.MediaProcess
         /// <param name="text">字幕</param>
         /// <param name="position">位置</param>
         /// <param name="fontcolor">文字顏色</param>
+        /// <param name="fontfile">C:/Windows/Fonts/ 下的 font file name</param>
         /// <param name="fontsize">文字大小</param>
         /// <returns></returns>
-        private VideoHandlerObject AddTextToVideo(string text, string position, Color fontcolor, int fontsize = 24)
+        private VideoHandlerObject AddTextToVideo(string text, string position, Color fontcolor, string fontfile , int fontsize)
         {
             bool isExist = this.IsFileExist($"{this.WorkPath}\\Output{this.FielType}");
             Process process = this.GetVideoProcess();
             process.StartInfo.Arguments = $"-i {(isExist ? this.OutputPathOld : this.SourcePath)} " +
                                           $"-vf drawtext=\"" +
+                                          $"fontfile=/Windows/Fonts/{fontfile}:" +
                                           $"fontsize = {fontsize}:" +
                                           $"fontcolor = #{fontcolor.R.ToString("X2") + fontcolor.G.ToString("X2") + fontcolor.B.ToString("X2")}:" +
                                           $"{position}" + //  x=[x]:y=[y]:
