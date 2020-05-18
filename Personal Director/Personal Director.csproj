@@ -135,6 +135,9 @@
     <Compile Include="View\ClipEditPage.xaml.cs">
       <DependentUpon>ClipEditPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\TextEditPage.xaml.cs">
+      <DependentUpon>TextEditPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -142,7 +145,6 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\thumb.png" />
     <Content Include="Assets\thumb2.png" />
     <Content Include="Assets\video1.mp4" />
     <Content Include="Properties\Default.rd.xml" />
@@ -172,6 +174,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ClipEditPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TextEditPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

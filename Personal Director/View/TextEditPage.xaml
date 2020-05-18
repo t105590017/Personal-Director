@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="Personal_Director.View.ClipEditPage"
+    x:Class="Personal_Director.View.TextEditPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Personal_Director.View"
@@ -11,7 +11,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
         <c:TimeLineConverter x:Key="converter" />
-        <!--<c:DoubleConverterTime x:Key="conveterToTime"/>-->
 
         <Storyboard x:Name="EllStoryboard" RepeatBehavior="Forever">
             <DoubleAnimation Duration="0:0:20" 
@@ -90,7 +89,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
     </Page.Resources>
 
 
@@ -126,9 +125,10 @@
                     </Ellipse.RenderTransform>
 
                 </Ellipse>
-
                 <MediaPlayerElement x:Name="_mediaPlayerElement" AreTransportControlsEnabled="False" HorizontalAlignment="Stretch"/>
-
+                <TextBlock x:Name="subtitle" Text="{Binding ElementName=textBox, Path=Text}" FontSize="{Binding ElementName=slider, Path=Value}"
+                           Foreground="{Binding ElementName=color, Path=Text}"
+                           VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,20"/>
             </Grid>
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
@@ -143,11 +143,11 @@
                 </Grid.ColumnDefinitions>
                 <AppBarButton Grid.Column="1" Name="start" Icon="Play" FontSize="20" Click="start_Click" HorizontalAlignment="Left"/>
                 <AppBarButton Grid.Column="2" Name="pause" Icon="Pause" FontSize="20" Click="pause_Click" />
-                <TextBlock x:Name="lowerTime" Grid.Column="4" Margin="28,8,0,0"
+                <TextBlock x:Name="currentTime" Grid.Column="4" Margin="28,8,0,0"
                        HorizontalAlignment="Left"  Text="00:00:00" Grid.RowSpan="2"  TextWrapping="Wrap" VerticalAlignment="Top"/>
                 <Slider Grid.Column="4" Padding="20,5,20,0"  x:Name="timeLine"  Style="{StaticResource MySlider}"
                     Value="{x:Bind _mediaTimelineController.Position, Converter={StaticResource converter},Mode=TwoWay}" Margin="72.6,0,81.2,0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                <TextBlock x:Name="upperTime" Grid.Column="6" Margin="0,8,0,0"
+                <TextBlock x:Name="totalTime" Grid.Column="6" Margin="0,8,0,0"
                        HorizontalAlignment="Left"  Text="00:00:00"  Grid.RowSpan="2"  TextWrapping="Wrap" VerticalAlignment="Top"/>
 
                 <controls:RangeSelector Grid.Column="5" x:Name="RangeSelectorControl"  Margin="9.8,6,10.4,0" StepFrequency="1" VerticalAlignment="Top"/>
@@ -156,17 +156,66 @@
             <!--<TextBlock x:Name="textBlock" 
                        HorizontalAlignment="Left"  Text="00:00:00" Margin="210,83,0,0" Grid.RowSpan="2"  TextWrapping="Wrap" VerticalAlignment="Top"/>-->
 
-
-
-
         </Grid>
         <Grid Grid.Column="1">
-            <Button x:Name="button1" Content="完成" Background="RoyalBlue"   Width="125" HorizontalAlignment="Left" Margin="15,0,0,30" VerticalAlignment="Bottom"/>
-            <Button x:Name="button2" Content="取消" Width="125" HorizontalAlignment="Right" Margin="0,0,15,30" VerticalAlignment="Bottom" Click="PrePage_Click"/>
-            <TextBlock  HorizontalAlignment="Center" Margin="0,41,0,0" FontSize="22" FontWeight="Bold" Text="修剪" TextWrapping="Wrap" VerticalAlignment="Top"/>
-            <TextBlock  HorizontalAlignment="Left" Margin="33,107,0,0" FontSize="20"  Text="影片長度" TextWrapping="Wrap" VerticalAlignment="Top"/>
-            <TextBlock x:Name="totalTime" HorizontalAlignment="Left" Margin="210,107,0,0" FontSize="20"  Text="00:00:00" TextWrapping="Wrap" VerticalAlignment="Top"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2.5*"/>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="2.5*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock  HorizontalAlignment="Center" Grid.Row="0" Margin="0,41,0,0" FontSize="22" FontWeight="Bold" Text="文字" FontFamily="Georgia" TextWrapping="Wrap" VerticalAlignment="Top"/>
+            <TextBox x:Name="textBox"  Grid.Row="0" HorizontalAlignment="Stretch" Margin="20,80,20,0" VerticalAlignment="Top" Height="94" PlaceholderText="在此輸入你的文字"/>
+
+            <Slider x:Name="slider" Grid.Row="1" Minimum="8" Maximum="80" Value="30" HorizontalAlignment="Stretch" Margin="30,0,30,0" VerticalAlignment="Top"/>
+            <ComboBox x:Name="FontsCombo" Grid.Row="2" ItemsSource="{x:Bind TextFonts}" SelectionChanged="FontsCombo_SelectionChanged" 
+                      HorizontalAlignment="Center" Width="200" VerticalAlignment="Center" SelectedIndex="2">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <TextBlock FontFamily="{x:Bind}"
+                    Text="{x:Bind}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Viewbox Grid.Row="3" MaxWidth="150" MaxHeight="350" Height="200" Stretch="Fill">
+                <ColorPicker x:Name="colorPicker" ColorSpectrumShape="Ring" IsColorPreviewVisible="False"
+                 IsColorChannelTextInputVisible="False"
+                 IsHexInputVisible="False" VerticalAlignment="Top" Width="200" Height="403"  HorizontalAlignment="Stretch"/>
+            </Viewbox>
+            <Grid Grid.Row="4" Margin="10,20,10,0" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.5*"/>
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Column="1"  HorizontalAlignment="Center" Text="版面配置" FontSize="16" Margin="0,5,0,0" FontWeight="Bold"/>
+                <ListView Grid.Row="1" Padding="5" SelectionMode="None" IsItemClickEnabled="True" ItemClick="ListView_ItemClick">
+                    <Button Width="60" Height="50" Margin="2,5,2,5"  Click="Button_Click_1" />
+                    <Button Width="60" Height="50" Margin="2,5,2,5" FontSize="20" Click="Button_Click_2"/>
+                    <Button Width="60" Height="50" Margin="2,5,2,5" FontSize="20" Click="Button_Click_3"/>
+                    <Button Width="60" Height="50" Margin="2,5,2,5" FontSize="20" Click="Button_Click_4"/>
+                    <Button Width="60" Height="50" Margin="2,5,2,5" FontSize="20" Click="Button_Click_5"/>
+                    <Button Width="60" Height="50" Margin="2,5,2,5" FontSize="20" Click="Button_Click_6"/>
+                    <Button Width="60" Height="50" Margin="2,5,2,5" FontSize="20" Click="Button_Click_7"/>
+                    <Button Width="60" Height="50" Margin="2,5,2,5" FontSize="20" Click="Button_Click_8"/>
+                    <Button Width="60" Height="50" Margin="2,5,2,5" FontSize="20" Click="Button_Click_9"/>
+
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                </ListView>
+
+            </Grid>
+            <Button x:Name="button1" Grid.Row="5" Content="完成" Background="RoyalBlue"   Width="125" HorizontalAlignment="Left" Margin="15,0,0,30" VerticalAlignment="Bottom"/>
+            <Button x:Name="button2" Grid.Row="5" Content="取消" Width="125" HorizontalAlignment="Right" Margin="0,0,15,30" VerticalAlignment="Bottom" Click="PrePage_Click"/>
+            <TextBlock x:Name="color" Text="{x:Bind colorPicker.Color, Mode=OneWay}" Visibility="Collapsed"/>
 
         </Grid>
     </Grid>
 </Page>
+

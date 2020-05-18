@@ -187,5 +187,10 @@ namespace Personal_Director
             this.Frame.Navigate(typeof(ClipEditPage));
         }
         #endregion
+
+        private void Text_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(TextEditPage));
+        }
     }
 }

@@ -140,7 +140,7 @@
                         <TextBlock Margin="5,0,0,0" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">修剪</TextBlock>
                     </StackPanel>
                 </Button>
-                <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="Text_Click">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE775;" FontSize="14" HorizontalAlignment="Right"/>
                         <TextBlock Margin="5,0,0,0" FontSize="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">文字</TextBlock>
