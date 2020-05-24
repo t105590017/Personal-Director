@@ -36,7 +36,6 @@ namespace Personal_Director.View
         MediaPlayer _mediaPlayer = new MediaPlayer();
         MediaTimelineController _mediaTimelineController = new MediaTimelineController();
         TimeSpan _duration;
-        private String _subtitle = "";
         //TimeLineConverter _converter;
         // MediaPlaybackSession _mediaPlaybackSession = new MediaPlaybackSession();
         public TextEditPage()
@@ -54,6 +53,7 @@ namespace Personal_Director.View
             timer.Interval = TimeSpan.FromSeconds(1);
             timeLine.Value = ((TimeSpan)_mediaTimelineController.Position).TotalSeconds;
             Console.WriteLine("this is text page!!!!!!!!!");
+
         }
 
         private void pause_Click(object sender, RoutedEventArgs e)
@@ -259,6 +259,13 @@ namespace Personal_Director.View
         {
             subtitle.VerticalAlignment = VerticalAlignment.Bottom;
             subtitle.HorizontalAlignment = HorizontalAlignment.Right;
+        }
+
+        private void Saving_Click(object sender, RoutedEventArgs e)
+        {
+            output.Text = currentTime.Text.ToString() + '/' + subtitle.Text + '/' + subtitle.FontSize.ToString() + '/'
+                + color.Text.ToString() + '/' + FontsCombo.SelectedValue.ToString() + "/VerticalAlignment:" 
+                + subtitle.VerticalAlignment.ToString() + "/HorizontalAlignment:" + subtitle.HorizontalAlignment.ToString();
         }
     }
 }

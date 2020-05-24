@@ -113,13 +113,7 @@ namespace Personal_Director.View
                 EllStoryboard.Stop();
             }
         }
-
-        /*private void Slider_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            Slider MySlider = sender as Slider;
-            _mediaTimelineController.Position = TimeSpan.FromSeconds(MySlider.Value);
-            textBlock.Text = _mediaTimelineController.Position.ToString();
-        }*/
+        
 
         private void stop_Click(object sender, RoutedEventArgs e)
         {
@@ -136,31 +130,7 @@ namespace Personal_Director.View
 
         }
 
-        /*private void display_Click(object sender, RoutedEventArgs e)
-        {
-            ApplicationView view = ApplicationView.GetForCurrentView();
-            bool isInFullScreenMode = view.IsFullScreenMode;
-            if (isInFullScreenMode)
-            {
-                ImageBrush imageBrush = new ImageBrush();
-                imageBrush.ImageSource = new BitmapImage(new Uri("ms-appx:///Assets/3.jpg", UriKind.Absolute));
-                MyGrid.Background = imageBrush;
-                MyGrid.Background.Opacity = 0.5;
-                view.ExitFullScreenMode();
-            }
-            else
-            {
-                MyGrid.Background = new SolidColorBrush(Colors.Black);// Windows.UI.Xaml.Media.Brush
-                view.TryEnterFullScreenMode();
-            }
-        }*/
-
         
-
-        /*private void Volumn_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            _mediaPlayer.Volume = (double)Volumn.Value;
-        }*/
 
         private async void MediaSource_OpenOperationCompleted(MediaSource sender, MediaSourceOpenOperationCompletedEventArgs args)
         {
@@ -184,13 +154,7 @@ namespace Personal_Director.View
                 lowerTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMin));
                 upperTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMax));
                 totalTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMax) - Math.Round(RangeSelectorControl.RangeMin));
-
-                /*timeLineUpper.Minimum = 0;
-                timeLineUpper.Maximum = _duration.TotalSeconds;
-                timeLineUpper.StepFrequency = 1;
-                timeLineLower.Minimum = 0;
-                timeLineLower.Maximum = _duration.TotalSeconds;
-                timeLineLower.StepFrequency = 1;*/
+                
             });
         }
 
