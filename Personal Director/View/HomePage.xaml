@@ -43,7 +43,7 @@
         </Grid>
         <Grid  Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Right">
             <CommandBar HorizontalAlignment="Right" VerticalAlignment="Top" Background="White" >
-                <AppBarButton Icon="OpenFile" Label="Open"/>
+                <AppBarButton x:Name="OpenProject" Icon="OpenFile" Label="Open" Click="OpenProject_Click"/>
                 <AppBarButton x:Name="NewProject" Icon="Add" Label="New" Click="NewProject_Click"/>
                 <AppBarButton Icon="Video" LabelPosition="Default" Label="新增影片"/>
                 <AppBarButton Icon="SelectAll" Label="選取" Click="AppBarButton_Click"/>
@@ -123,7 +123,7 @@
             <FontIcon FontFamily="Segoe MDL2 Assets"  Margin="30,53,0,0" Glyph="&#xE8B9;" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left"/>
             <TextBlock  Text="已為您建立"  Margin="50,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top"></TextBlock>
 
-            <GridView x:Name="ProjectList" SelectionMode="Single" Margin="50,100,0,0" CanReorderItems="True" ItemsSource="{x:Bind Path=ProjectDataList, Mode=OneWay}"
+            <GridView x:Name="ProjectList" SelectionMode="Single" Margin="50,100,0,0" CanReorderItems="True" ItemsSource="{x:Bind Path=_projectDataList, Mode=OneWay}"
                       HorizontalContentAlignment="Center">
                 <GridView.ItemTemplate >
                     <DataTemplate x:DataType="local:HomePage">

@@ -1,7 +1,8 @@
 ﻿using Personal_Director.Models;
-using Personal_Director.View;
 using Personal_Director.ViewModels;
+using Production.MediaProcess;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -33,7 +35,41 @@ namespace Personal_Director
         {
             this.InitializeComponent();
             //TODO: models起始位置應該在HomePage
-            this.ViewModel = new ProjectEditViewModel(new Model());
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter is Model)
+            {
+                this.ViewModel = new ProjectEditViewModel((Model)e.Parameter);
+            }
+            else
+            {
+                throw new Exception("Model passing error!");
+            }
+            base.OnNavigatedTo(e);
+        }
+
+        private List<string> guids = new List<string>();
+        private async void ffmpegTest_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
+            picker.FileTypeFilter.Add("*");
+            StorageFile file = await picker.PickSingleFileAsync();
+
+            if (file != null)
+            {
+                Guid guid = Guid.NewGuid();
+                guids.Add(guid.ToString());
+
+                VideoHandler.SetSource(guid, file.Path)
+                            .CutVideo(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20))
+                            .AddTextToVideo(guid.ToString(), Production.Enum.VideoPosition.Center, System.Drawing.Color.Blue, fontsize: 72);
+                if(guids.Count() == 3)
+                    VideoHandler.Export(guids.ToArray());
+            }
         }
 
         #region event
@@ -52,20 +88,18 @@ namespace Personal_Director
             return false;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            if (e.Parameter is Project)
-            {
-                Project = (Project)e.Parameter;
-            }
-            else
-            {
-                throw new Exception("ne project !!");
-            }
-            base.OnNavigatedTo(e);
-        }
-
-        
+        //protected override void OnNavigatedTo(NavigationEventArgs e)
+        //{
+        //    if (e.Parameter is Project)
+        //    {
+        //        Project = (Project)e.Parameter;
+        //    }
+        //    else
+        //    {
+        //        throw new Exception("ne project !!");
+        //    }
+        //    base.OnNavigatedTo(e);
+        //}
 
         //新增媒體至媒體櫃
         private async void AddMedia_ClickAsync(object sender, RoutedEventArgs e)
@@ -86,15 +120,17 @@ namespace Personal_Director
                 const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
                 var image = new BitmapImage();
                 image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
-                this.ViewModel.AddMediaIntoCabinet(new Media()
+                Media media = new Media()
                 {
                     Thumbnail = image,
                     Describe = file.Name
-                });
+                };
+                this.ViewModel.AddMediaIntoCabinet(media);
+                this.ViewModel.AddMediaIntoProjectInfo(file.Path, media);
             }
             else
             {
-                var x = "Operation cancelled.";
+                //var x = "Operation cancelled.";
             }
         }
 
@@ -137,9 +173,11 @@ namespace Personal_Director
             var guid = await e.Data.GetView().GetTextAsync("MediaDataGuid");
 
             Media media = this.ViewModel.GridViewMediaCabinetList.FirstOrDefault(i => i.Guid.ToString() == guid);
-            if (!this.ViewModel.GridViewMediaScriptDataList.Any())
+            StoryBoard storyBoard = new StoryBoard(media);
+            if (!this.ViewModel.GridViewStoryBoardScriptDataList.Any())
             {
-                this.ViewModel.InsertMediaIntoCabinet(0, new Media(media));
+                this.ViewModel.InsertStoryBoardIntoScript(0, storyBoard.MediaSource);
+                this.ViewModel.AddStoryBoardIntoProjectInfo(storyBoard);
                 return;
             }
 
@@ -155,7 +193,8 @@ namespace Personal_Director
             //Determine the index of the item from the item position (assumed all items are the same size)
             int index = Math.Min(gridView.Items.Count - 1, (int)(pos.X / itemHeight));
 
-            this.ViewModel.InsertMediaIntoCabinet(index, new Media(media));
+            this.ViewModel.InsertStoryBoardIntoScript(index, storyBoard.MediaSource);
+            this.ViewModel.AddStoryBoardIntoProjectInfo(storyBoard);
         }
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
@@ -180,17 +219,41 @@ namespace Personal_Director
             e.Data.SetData("MediaDataGuid", (e.Items[0] as Media).Guid.ToString());
         }
 
-        private void Clip_Click(object sender, RoutedEventArgs e)
+        //按下儲存專案, 選擇導出的路徑並儲存專案
+        private async void SaveProject_Click(object sender, RoutedEventArgs e)
         {
+            var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+            savePicker.SuggestedStartLocation =
+                Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            savePicker.FileTypeChoices.Add("Personal Director 專案檔", new List<string>() { ".proj" });
+            savePicker.SuggestedFileName = "Personal-Director-project";
 
-            //this.Frame.Navigate(typeof(ClipPage));
-            this.Frame.Navigate(typeof(ClipEditPage));
+            Windows.Storage.StorageFile file = await savePicker.PickSaveFileAsync();
+            if (file != null)
+            {
+                //禁止更新文件的遠程版本，直到完成更改並call CompleteUpdatesAsync為止。
+                Windows.Storage.CachedFileManager.DeferUpdates(file);
+                //寫入檔案
+                await Windows.Storage.FileIO.WriteTextAsync(file, this.ViewModel.GetProjectInfoToSaving());
+                //跟Windows確認檔案狀態
+                Windows.Storage.Provider.FileUpdateStatus status =
+                    await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
+                //如果成功儲存
+                if (status == Windows.Storage.Provider.FileUpdateStatus.Complete)
+                {
+                    //this.textBlock.Text = "File " + file.Name + " was saved.";
+                }
+                else
+                {
+                    //this.textBlock.Text = "File " + file.Name + " couldn't be saved.";
+                }
+            }
+            else
+            {
+                //取消動作
+                //this.textBlock.Text = "Operation cancelled.";
+            }
         }
         #endregion
-
-        private void Text_Click(object sender, RoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(TextEditPage));
-        }
     }
 }

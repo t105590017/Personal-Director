@@ -1,34 +1,42 @@
 ﻿using Personal_Director.Models;
-using Personal_Director.View;
+using Personal_Director.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.FileProperties;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 namespace Personal_Director
 {
     public sealed partial class HomePage : Page
     {
-        private Project project { get; set; }
-        private List<Project> ProjectDataList { get; set; }
+        private Project _project { get; set; }
+        private List<Project> _projectDataList { get; set; }
+
+        private Model _model { get; set; }
+
+        private HomePageViewModel _viewModel { get; set; }
         //public bool SelectionCheckBox { get; set; }
         public HomePage()
         {
             this.InitializeComponent();
-
+            this._model = new Model();
+            this._viewModel = new HomePageViewModel(this._model);
             List<Media> mediaScriptList = new List<Media>(),
                         mediaCabinetList = new List<Media>();
-            this.ProjectDataList = new List<Project> {
+            this._projectDataList = new List<Project> {
                 new Project{Name = "未命名專案1",
                             MediaCabinetList = mediaCabinetList,
                             MediaScriptList = mediaScriptList
@@ -70,7 +78,7 @@ namespace Personal_Director
                             MediaScriptList = mediaScriptList
                            },
             };
-            this.project = new Project()
+            this._project = new Project()
             {
                 Name = "123",
                 MediaCabinetList = mediaCabinetList,
@@ -90,7 +98,7 @@ namespace Personal_Director
 
         private bool On_BackRequested()
         {
-            this.project.Name = this.project.Name + "1";
+            this._project.Name = this._project.Name + "1";
 
             if (this.Frame.CanGoBack)
             {
@@ -100,24 +108,15 @@ namespace Personal_Director
             return false;
         }
 
-        
-
         private void NewProject_Click(object sender, RoutedEventArgs e)
         {
-            if (!this.ProjectDataList.Any())
+            if (!this._projectDataList.Any())
             {
-                this.ProjectDataList.Insert(0, new Project(project));
-                this.Frame.Navigate(typeof(ProjectEdit), project);
+                this._projectDataList.Insert(0, new Project(_project));
+                this.Frame.Navigate(typeof(ProjectEdit), this._model);
                 return;
             }
-            this.Frame.Navigate(typeof(ProjectEdit), project);
-            //int index = this.ProjectDataList.Count() + 1;
-            //this.ProjectDataList.Insert(index, new Project(project));
-            //this.Frame.Navigate(typeof(ProjectEdit), project);
-
-
-            //var x = new GridView();
-
+            this.Frame.Navigate(typeof(ProjectEdit), this._model);
         }
 
         private void FlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -196,6 +195,59 @@ namespace Personal_Director
             selectionCancel_btn.Visibility = Visibility.Visible;
             selection_btn.Visibility = Visibility.Visible;
             selection_btn2.Visibility = Visibility.Visible;
+        }
+
+        private async void OpenProject_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Desktop;
+            picker.FileTypeFilter.Add(".proj");
+
+            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+            if (file != null)
+            {
+                //TODO: 讀檔 execption還沒做
+                string text = await Windows.Storage.FileIO.ReadTextAsync(file);
+                bool isProjectSetupSucess = this._viewModel.OpenProject(text);
+                Console.WriteLine(isProjectSetupSucess);
+
+                //匯入媒體櫃
+                List<string> mediaCabinetPath = this._viewModel.GetCabinetPathFromProject();
+                List<string> mediaCabinetGuid = this._viewModel.GetCabinetGuidFromProject();
+                for (int i = 0; i < mediaCabinetPath.Count; i++)
+                {
+                    file = await Windows.Storage.StorageFile.GetFileFromPathAsync(mediaCabinetPath[i]);
+                    if (file != null)
+                    {
+                        var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                        const uint requestedSize = 190;
+                        const ThumbnailMode thumbnailMode = ThumbnailMode.VideosView;
+                        const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
+                        var image = new BitmapImage();
+                        image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
+                        this._viewModel.AddMediaIntoCabinet(new Media(Guid.Parse(mediaCabinetGuid[i]))
+                        {
+                            Thumbnail = image,
+                            Describe = file.Name
+                        });
+                    }
+                }
+
+                //匯入分鏡腳本
+                List<Guid> mediaSourceGuids = this._viewModel.GetMediaSourceGuidFromProject();
+                ObservableCollection<Media> mediaCabinet = this._model.getAllMediaCabinetData();
+                for (int i = 0; i < mediaSourceGuids.Count; i++)
+                {
+                    StoryBoard storyBoard = new StoryBoard(mediaCabinet.FirstOrDefault(x => x.Guid == mediaSourceGuids[i]));
+                    this._model.AddStoryBoardIntoScriptData(storyBoard);
+                }
+                this.Frame.Navigate(typeof(ProjectEdit), _model);
+            }
+            else
+            {
+                this.textBlock.Text = "Operation cancelled.";
+            }
         }
     }
 }
