@@ -1,4 +1,5 @@
 ﻿using Personal_Director.Models;
+using Personal_Director.View;
 using Personal_Director.ViewModels;
 using Production.MediaProcess;
 using System;
@@ -255,5 +256,17 @@ namespace Personal_Director
             }
         }
         #endregion
+
+        private void Clip_Click(object sender, RoutedEventArgs e)
+        {
+
+            //this.Frame.Navigate(typeof(ClipPage));
+            this.Frame.Navigate(typeof(ClipEditPage));
+        }
+
+        private void Text_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(TextEditPage));
+        }
     }
 }
