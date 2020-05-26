@@ -198,14 +198,42 @@ namespace Personal_Director
             this.ViewModel.AddStoryBoardIntoProjectInfo(storyBoard);
         }
 
-        private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        private void StoryBoardDelete(object sender, RoutedEventArgs e)
         {
             this.ViewModel.RemoveMediaFromScript(this.MediaSelectGuid);
         }
 
-        private void Grid_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        private async void MediaCabinetDelete(object sender, RoutedEventArgs e)
         {
-            var flyout = this.ImageCommandsFlyout;
+            // 彈出視窗 沒用
+            ContentDialog noWifiDialog = new ContentDialog
+            {
+                Title = "Test",
+                Content = "媒體櫃刪除",
+                CloseButtonText = "Ok"
+            };
+
+            ContentDialogResult result = await noWifiDialog.ShowAsync();
+            // 彈出視窗 沒用
+
+            //this.ViewModel.RemoveMediaFromScript(this.MediaSelectGuid);
+        }
+
+        private void RightTappedStoryBoard(object sender, RightTappedRoutedEventArgs e)
+        {
+            var flyout = this.StoryBoardCommandsFlyout;
+            this.MediaSelectGuid = ((Grid)sender).Tag.ToString();
+            var options = new FlyoutShowOptions()
+            {
+                Position = e.GetPosition((FrameworkElement)sender),
+                ShowMode = FlyoutShowMode.Transient
+            };
+            flyout?.ShowAt((FrameworkElement)sender, options);
+        }
+
+        private void RightTappedMediaCabinet(object sender, RightTappedRoutedEventArgs e)
+        {
+            var flyout = this.MediaCabinetCommandsFlyout;
             this.MediaSelectGuid = ((Grid)sender).Tag.ToString();
             var options = new FlyoutShowOptions()
             {
@@ -255,7 +283,6 @@ namespace Personal_Director
                 //this.textBlock.Text = "Operation cancelled.";
             }
         }
-        #endregion
 
         private void Clip_Click(object sender, RoutedEventArgs e)
         {
@@ -268,5 +295,6 @@ namespace Personal_Director
         {
             this.Frame.Navigate(typeof(TextEditPage));
         }
+        #endregion
     }
 }
