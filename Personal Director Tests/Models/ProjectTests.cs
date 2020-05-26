@@ -92,5 +92,20 @@ namespace Personal_Director_Tests.Models
             Assert.AreEqual(2, sut.GetMediaSourceGuids().Count);
             Assert.AreEqual(guid, sut.GetMediaSourceGuids().Last());
         }
+
+        [TestMethod]
+        public void GetMediaSourceGuidsTest()
+        {
+            //Arrange
+            string jsonString = @"{""MediaCabinet"":[{""path"":""C:\\Users\\LaAaa\\Videos\\guitar.mp4"",""Guid"":""c4d41b0b-4f29-47cc-b84d-09273e6268ad""}],""Script"":[{""Guid"":""22f9f73a-d951-422e-9f69-240635feea80""}]}";
+            Project sut = new Project(jsonString);
+
+            //Act
+            List<Guid> guids = sut.GetMediaSourceGuids();
+
+            //Assert
+            Assert.AreEqual(1, guids.Count);
+            Assert.AreEqual("22f9f73a-d951-422e-9f69-240635feea80", guids.Last().ToString());
+        }
     }
 }
