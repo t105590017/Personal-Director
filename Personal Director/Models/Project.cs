@@ -69,37 +69,44 @@ namespace Personal_Director.Models
             this._scriptJson.Add(jsonObject);
         }
 
-        public List<string> GetMediaCabinetPath()
+        public List<string> GetMediaCabinetPaths()
         {
             List<string> mediaCabinets = new List<string>();
-            foreach (JsonValue jsonValue in this._mediaCabinetJson)
+            //foreach (JsonValue jsonValue in this._mediaCabinetJson)
+            //{
+            //    JsonObject media = jsonValue.GetObject();
+            //    mediaCabinets.Add(media.GetNamedString("path"));
+            //}
+            for (int i = 0; i < this._mediaCabinetJson.Count; i++)
             {
-                JsonObject media = jsonValue.GetObject();
+                JsonObject media = this._mediaCabinetJson[i].GetObject();
                 mediaCabinets.Add(media.GetNamedString("path"));
             }
+
             return mediaCabinets;
         }
 
-        public List<string> GetMediaCabinetGuid()
+        public List<string> GetMediaCabinetGuids()
         {
-            List<string> mediaCabinets = new List<string>();
-            foreach (JsonValue jsonValue in this._mediaCabinetJson)
+            List<string> mediaCabinetGuids = new List<string>();
+            for (int i = 0; i < this._mediaCabinetJson.Count; i++)
             {
-                JsonObject media = jsonValue.GetObject();
-                mediaCabinets.Add(media.GetNamedString("Guid"));
+                JsonObject media = this._mediaCabinetJson[i].GetObject();
+                mediaCabinetGuids.Add(media.GetNamedString("Guid"));
             }
-            return mediaCabinets;
+
+            return mediaCabinetGuids;
         }
 
-        public List<Guid> GetMediaSourceGuid()
+        public List<Guid> GetMediaSourceGuids()
         {
-            List<Guid> mediaSources = new List<Guid>();
-            foreach (JsonValue jsonValue in this._scriptJson)
+            List<Guid> mediaSourceGuids = new List<Guid>();
+            for (int i = 0; i < this._scriptJson.Count; i++)
             {
-                JsonObject guid = jsonValue.GetObject();
-                mediaSources.Add(Guid.Parse(guid.GetNamedString("Guid")));
+                JsonObject storyBoard = this._scriptJson[i].GetObject();
+                mediaSourceGuids.Add(Guid.Parse(storyBoard.GetNamedString("Guid")));
             }
-            return mediaSources;
+            return mediaSourceGuids;
         }
         public DateTime Date { get; }
 
