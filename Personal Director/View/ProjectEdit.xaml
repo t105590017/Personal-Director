@@ -30,15 +30,18 @@
         </Grid.RowDefinitions>
 
         <Grid.Resources>
-            <CommandBarFlyout x:Name="ImageCommandsFlyout">
+            <CommandBarFlyout x:Name="StoryBoardCommandsFlyout">
                 <!--<AppBarButton Icon="OutlineStar" ToolTipService.ToolTip="Favorite"/>
                 <AppBarButton Icon="Copy" ToolTipService.ToolTip="Copy"/>
                 <AppBarButton Icon="Share" ToolTipService.ToolTip="Share"/>-->
-                <AppBarButton Label="Delete" Icon="Delete" Click="AppBarButton_Click"/>
+                <AppBarButton Label="Delete" Icon="Delete" Click="StoryBoardDelete"/>
                 <CommandBarFlyout.SecondaryCommands>
                     <AppBarButton Label="Select all"/>
-                    <AppBarButton Label="Delete" Icon="Delete"  Click="AppBarButton_Click"/>
+                    <AppBarButton Label="Delete" Icon="Delete"  Click="StoryBoardDelete"/>
                 </CommandBarFlyout.SecondaryCommands>
+            </CommandBarFlyout>
+            <CommandBarFlyout x:Name="MediaCabinetCommandsFlyout">
+                <AppBarButton Label="Delete" Icon="Delete" Click="MediaCabinetDelete"/>
             </CommandBarFlyout>
         </Grid.Resources>
 
@@ -83,7 +86,7 @@
             <GridView x:Name="MediaCabinetList" Grid.Row="3" Grid.Column="1" SelectionMode="Multiple" CanDragItems="True" CanReorderItems="True" ItemsSource="{x:Bind Path=ViewModel.GridViewMediaCabinetList, Mode=OneWay}" DragItemsStarting="MediaCabinetList_DragItemsStarting">
                 <GridView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Width="210" Height="Auto">
+                        <Grid Width="210" Height="Auto" Tag="{Binding Guid}" RightTapped="RightTappedMediaCabinet">
                             <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"/>
                             <StackPanel Orientation="Vertical" Height="60" VerticalAlignment="Bottom" Padding="12">
                                 <TextBlock Text="{Binding Describe}" />
@@ -190,7 +193,7 @@
                       ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalContentAlignment="Center" Drop="MediaScriptList_Drop" DragOver="MediaScriptList_DragOver">
                 <GridView.ItemTemplate>
                     <DataTemplate x:Name="ImageOverlayDataTemplate" >
-                        <Grid Height="120" Width="210" Tag="{Binding MediaSource.Guid}" RightTapped="Grid_RightTapped">
+                        <Grid Height="120" Width="210" Tag="{Binding MediaSource.Guid}" RightTapped="RightTappedStoryBoard">
                             <Image Source="{Binding MediaSource.Thumbnail}" Stretch="UniformToFill"/>
                             <StackPanel Orientation="Vertical" Height="60" VerticalAlignment="Bottom" Padding="12">
                                 <TextBlock Text="{Binding MediaSource.Describe}" />
