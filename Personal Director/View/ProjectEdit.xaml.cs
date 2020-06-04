@@ -30,6 +30,8 @@ namespace Personal_Director
         private bool IsPutAwayMediaCabinet { get; set; } = true;
         private string MediaSelectGuid { get; set; }
 
+        private StoryBoard _selectedStoryBoard;
+
         private ProjectEditViewModel ViewModel { get; set; }
 
         public ProjectEdit()
@@ -89,19 +91,6 @@ namespace Personal_Director
             return false;
         }
 
-        //protected override void OnNavigatedTo(NavigationEventArgs e)
-        //{
-        //    if (e.Parameter is Project)
-        //    {
-        //        Project = (Project)e.Parameter;
-        //    }
-        //    else
-        //    {
-        //        throw new Exception("ne project !!");
-        //    }
-        //    base.OnNavigatedTo(e);
-        //}
-
         //新增媒體至媒體櫃
         private async void AddMedia_ClickAsync(object sender, RoutedEventArgs e)
         {
@@ -124,7 +113,8 @@ namespace Personal_Director
                 Media media = new Media()
                 {
                     Thumbnail = image,
-                    Describe = file.Name
+                    Describe = file.Name,
+                    SourcePath = file.Path
                 };
                 this.ViewModel.AddMediaIntoCabinet(media);
                 this.ViewModel.AddMediaIntoProjectInfo(file.Path, media);
@@ -286,9 +276,7 @@ namespace Personal_Director
 
         private void Clip_Click(object sender, RoutedEventArgs e)
         {
-
-            //this.Frame.Navigate(typeof(ClipPage));
-            this.Frame.Navigate(typeof(ClipEditPage));
+            this.Frame.Navigate(typeof(ClipEditPage), _selectedStoryBoard);
         }
 
         private void Text_Click(object sender, RoutedEventArgs e)
@@ -296,5 +284,35 @@ namespace Personal_Director
             this.Frame.Navigate(typeof(TextEditPage));
         }
         #endregion
+
+        private async void MediaCabinetList_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            Media item = e.ClickedItem as Media;
+
+            Windows.Storage.StorageFile file = await Windows.Storage.StorageFile.GetFileFromPathAsync(item.SourcePath);
+            if (file != null) 
+            {
+                var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                this.MediaPreView.Source = Windows.Media.Core.MediaSource.CreateFromStream(stream, file.ContentType);
+            }
+        }
+
+        private async void StoryBoardScriptList_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            _selectedStoryBoard = e.ClickedItem as StoryBoard;
+
+            Windows.Storage.StorageFile file = await Windows.Storage.StorageFile.GetFileFromPathAsync(_selectedStoryBoard.MediaSource.SourcePath);
+            if (file != null)
+            {
+                var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                this.MediaPreView.Source = Windows.Media.Core.MediaSource.CreateFromStream(stream, file.ContentType);
+            }
+        }
+
+        private void StoryBoardScriptList_FocusDisengaged(Control sender, FocusDisengagedEventArgs args)
+        {
+            this.ClipButton.IsEnabled = false;
+            this.AddTextButton.IsEnabled = false;
+        }
     }
 }

@@ -22,6 +22,8 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Personal_Director.Converter;
 using Microsoft.Toolkit.Uwp.UI.Controls;
+using Personal_Director.Models;
+using Personal_Director.ViewModels;
 
 // 空白頁項目範本已記錄在 https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -33,30 +35,73 @@ namespace Personal_Director.View
     public sealed partial class ClipEditPage : Page
     {
         MediaPlayer _mediaPlayer = new MediaPlayer();
+
         MediaTimelineController _mediaTimelineController = new MediaTimelineController();
+
         TimeSpan _duration;
+
+        private ClipEditPageViewModel ViewModel;
         //TimeLineConverter _converter;
         // MediaPlaybackSession _mediaPlaybackSession = new MediaPlaybackSession();
         public ClipEditPage()
         {
             this.InitializeComponent();
-            var mediaSource = MediaSource.CreateFromUri(new Uri("ms-appx:///Assets/video1.MP4"));
-            mediaSource.OpenOperationCompleted += MediaSource_OpenOperationCompleted;
-            _mediaPlayer.Source = mediaSource;
-            _mediaPlayer.CommandManager.IsEnabled = false;
-            _mediaPlayer.TimelineController = _mediaTimelineController;
-            //_mediaPlayer.Play();
-            _mediaPlayerElement.SetMediaPlayer(_mediaPlayer);
+            //var mediaSource = MediaSource.CreateFromUri(new Uri("ms-appx:///Assets/video1.MP4"));
+            //mediaSource.OpenOperationCompleted += MediaSource_OpenOperationCompleted;
+            //_mediaPlayer.Source = mediaSource;
+            //_mediaPlayer.CommandManager.IsEnabled = false;
+            //_mediaPlayer.TimelineController = _mediaTimelineController;
+            ////_mediaPlayer.Play();
+            //_mediaPlayerElement.SetMediaPlayer(_mediaPlayer);
 
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timeLine.Value = ((TimeSpan)_mediaTimelineController.Position).TotalSeconds;
+            //DispatcherTimer timer = new DispatcherTimer();
+            //timer.Interval = TimeSpan.FromSeconds(1);
+            //timeLine.Value = ((TimeSpan)_mediaTimelineController.Position).TotalSeconds;
 
-            //textBlock.Text = GenTimeSpanFromSeconds(Math.Round(timeLine.Value));
-            lowerTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMin));
-            upperTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMax));
-            timer.Tick += timer_Tick;
+            ////textBlock.Text = GenTimeSpanFromSeconds(Math.Round(timeLine.Value));
+            //lowerTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMin));
+            //upperTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMax));
+            //timer.Tick += timer_Tick;
 
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter is StoryBoard)
+            {
+                this.ViewModel = new ClipEditPageViewModel((StoryBoard)e.Parameter);
+                this.LoadMedia();
+            }
+            else
+            {
+                throw new Exception("Model passing error!");
+            }
+            base.OnNavigatedTo(e);
+        }
+
+        private async void LoadMedia()
+        {
+            Media media = this.ViewModel.StoryBoard.MediaSource as Media;
+
+            Windows.Storage.StorageFile file = await Windows.Storage.StorageFile.GetFileFromPathAsync(media.SourcePath);
+            if (file != null)
+            {
+                var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                MediaSource mediaSource = MediaSource.CreateFromStream(stream, file.ContentType);
+                mediaSource.OpenOperationCompleted += MediaSource_OpenOperationCompleted;
+                this._mediaPlayer.Source = mediaSource;
+                this._mediaPlayer.CommandManager.IsEnabled = false;
+                this._mediaPlayer.TimelineController = _mediaTimelineController;
+                this._mediaPlayerElement.SetMediaPlayer(this._mediaPlayer);
+
+                DispatcherTimer timer = new DispatcherTimer();
+                timer.Interval = TimeSpan.FromSeconds(1);
+                timeLine.Value = ((TimeSpan)_mediaTimelineController.Position).TotalSeconds;
+
+                lowerTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMin));
+                upperTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMax));
+                timer.Tick += timer_Tick;
+            }
         }
 
         private void pause_Click(object sender, RoutedEventArgs e)
@@ -129,8 +174,6 @@ namespace Personal_Director.View
             }
 
         }
-
-        
 
         private async void MediaSource_OpenOperationCompleted(MediaSource sender, MediaSourceOpenOperationCompletedEventArgs args)
         {
