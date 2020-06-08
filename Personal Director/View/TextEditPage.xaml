@@ -126,7 +126,7 @@
 
                 </Ellipse>
                 <MediaPlayerElement x:Name="_mediaPlayerElement" AreTransportControlsEnabled="False" HorizontalAlignment="Stretch"/>
-                <TextBlock x:Name="subtitle" Text="{Binding ElementName=textBox, Path=Text}" FontSize="{Binding ElementName=slider, Path=Value}"
+                <TextBlock x:Name="subtitle" Text="{Binding ElementName=textBox, Path=Text}"  FontSize="{Binding ElementName=slider, Path=Value}"
                            Foreground="{Binding ElementName=color, Path=Text}"
                            VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,20"/>
                 <TextBlock x:Name="output" Text="output" 
@@ -135,24 +135,21 @@
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="0.5*"/>
-                    <ColumnDefinition Width="0.5*"/>
-                    <ColumnDefinition Width="0.5*"/>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="8*"/>
+                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <AppBarButton Grid.Column="1" Name="start" Icon="Play" FontSize="20" Width="30" Height="40" Click="start_Click" HorizontalAlignment="Left"/>
-                <AppBarButton Grid.Column="2" Name="pause" Icon="Pause" FontSize="20" Width="30" Height="40" Click="pause_Click" />
-                <TextBlock x:Name="currentTime" Grid.Column="4" Margin="28,8,0,0"
+                <AppBarButton Grid.Column="1" Name="start_pause" Icon="Play" FontSize="20"  Margin="30,0,0,0" Width="30" Height="40" Click="Start_pause_Click" />
+                <TextBlock x:Name="currentTime" Grid.Column="2" Margin="28,8,0,0"
                        HorizontalAlignment="Left"  Text="00:00:00" Grid.RowSpan="2"  TextWrapping="Wrap" VerticalAlignment="Top"/>
-                <Slider Grid.Column="4" Padding="20,5,20,0"  x:Name="timeLine"  Style="{StaticResource MySlider}"
+                <Slider Grid.Column="2" Padding="20,5,20,0"  x:Name="timeLine"  Style="{StaticResource MySlider}"
                     Value="{x:Bind _mediaTimelineController.Position, Converter={StaticResource converter},Mode=TwoWay}" Margin="72.6,0,81.2,0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                <TextBlock x:Name="totalTime" Grid.Column="6" Margin="0,8,0,0"
+                <TextBlock x:Name="totalTime" Grid.Column="4" Margin="0,8,0,0"
                        HorizontalAlignment="Left"  Text="00:00:00"  Grid.RowSpan="2"  TextWrapping="Wrap" VerticalAlignment="Top"/>
 
-                <controls:RangeSelector Grid.Column="5" x:Name="RangeSelectorControl"  Margin="9.8,6,10.4,0" StepFrequency="1" VerticalAlignment="Top"/>
+                <controls:RangeSelector Grid.Column="2" x:Name="RangeSelectorControl"  Margin="98,6,24,0" StepFrequency="1" VerticalAlignment="Top" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"/>
 
             </Grid>
             <!--<TextBlock x:Name="textBlock" 

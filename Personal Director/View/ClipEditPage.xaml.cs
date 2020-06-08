@@ -41,28 +41,11 @@ namespace Personal_Director.View
         TimeSpan _duration;
 
         private ClipEditPageViewModel ViewModel;
-        //TimeLineConverter _converter;
-        // MediaPlaybackSession _mediaPlaybackSession = new MediaPlaybackSession();
+
         public ClipEditPage()
         {
             this.InitializeComponent();
-            //var mediaSource = MediaSource.CreateFromUri(new Uri("ms-appx:///Assets/video1.MP4"));
-            //mediaSource.OpenOperationCompleted += MediaSource_OpenOperationCompleted;
-            //_mediaPlayer.Source = mediaSource;
-            //_mediaPlayer.CommandManager.IsEnabled = false;
-            //_mediaPlayer.TimelineController = _mediaTimelineController;
-            ////_mediaPlayer.Play();
-            //_mediaPlayerElement.SetMediaPlayer(_mediaPlayer);
-
-            //DispatcherTimer timer = new DispatcherTimer();
-            //timer.Interval = TimeSpan.FromSeconds(1);
-            //timeLine.Value = ((TimeSpan)_mediaTimelineController.Position).TotalSeconds;
-
-            ////textBlock.Text = GenTimeSpanFromSeconds(Math.Round(timeLine.Value));
-            //lowerTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMin));
-            //upperTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMax));
-            //timer.Tick += timer_Tick;
-
+            
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -96,54 +79,42 @@ namespace Personal_Director.View
 
                 DispatcherTimer timer = new DispatcherTimer();
                 timer.Interval = TimeSpan.FromSeconds(1);
+                timer.Tick += Timer_Tick;
+                timer.Start();
                 timeLine.Value = ((TimeSpan)_mediaTimelineController.Position).TotalSeconds;
 
                 lowerTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMin));
                 upperTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMax));
-                timer.Tick += timer_Tick;
             }
         }
 
-        private void pause_Click(object sender, RoutedEventArgs e)
+        private void Start_pause_Click(object sender, RoutedEventArgs e)
         {
+
             try
             {
                 if (_mediaTimelineController.State == MediaTimelineControllerState.Running)
                 {
                     EllStoryboard.Pause();
                     _mediaTimelineController.Pause();
+                    start_pause.Icon = new SymbolIcon(Symbol.Play);
                 }
                 else
                 {
                     //EllStoryboard.Resume();
                     EllStoryboard.Begin();
                     _mediaTimelineController.Resume();
+                    start_pause.Icon = new SymbolIcon(Symbol.Pause);
                 }
             }
             catch
             {
 
             }
-        }
-
-        private void start_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                DispatcherTimer timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromSeconds(1);
-                timer.Tick += timer_Tick;
-                timer.Start();
-                EllStoryboard.Begin();
-                _mediaTimelineController.Start();
-            }
-            catch
-            {
-
-            }
 
         }
-        void timer_Tick(object sender, object e)
+
+        void Timer_Tick(object sender, object e)
         {
             timeLine.Value = ((TimeSpan)_mediaTimelineController.Position).TotalSeconds;
             //textBlock.Text = GenTimeSpanFromSeconds(Math.Round(timeLine.Value));
@@ -160,20 +131,7 @@ namespace Personal_Director.View
         }
         
 
-        private void stop_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                _mediaTimelineController.Position = TimeSpan.FromSeconds(0);
-                _mediaTimelineController.Pause();
-                EllStoryboard.Stop();
-            }
-            catch
-            {
-
-            }
-
-        }
+        
 
         private async void MediaSource_OpenOperationCompleted(MediaSource sender, MediaSourceOpenOperationCompletedEventArgs args)
         {
@@ -186,11 +144,12 @@ namespace Personal_Director.View
                 timeLine.StepFrequency = 1;
                 RangeSelectorControl.Minimum = 0;
                 RangeSelectorControl.Maximum = Math.Round(_duration.TotalSeconds);
+                RangeSelectorControl.RangeMax = RangeSelectorControl.Maximum;
                 RangeSelectorControl.StepFrequency = 1;
 
                 DispatcherTimer timer = new DispatcherTimer();
                 timer.Interval = TimeSpan.FromSeconds(1);
-                timer.Tick += timer_Tick;
+                timer.Tick += Timer_Tick;
                 timeLine.Value = ((TimeSpan)_mediaTimelineController.Position).TotalSeconds;
                 //textBlock.Text = GenTimeSpanFromSeconds(Math.Round(timeLine.Value));
 
@@ -231,5 +190,59 @@ namespace Personal_Director.View
             }
             return false;
         }
+
+        /*private void pause_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_mediaTimelineController.State == MediaTimelineControllerState.Running)
+                {
+                    EllStoryboard.Pause();
+                    _mediaTimelineController.Pause();
+                }
+                else
+                {
+                    //EllStoryboard.Resume();
+                    EllStoryboard.Begin();
+                    _mediaTimelineController.Resume();
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        private void start_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DispatcherTimer timer = new DispatcherTimer();
+                timer.Interval = TimeSpan.FromSeconds(1);
+                timer.Tick += timer_Tick;
+                timer.Start();
+                EllStoryboard.Begin();
+                _mediaTimelineController.Start();
+            }
+            catch
+            {
+
+            }
+
+        }*/
+        /*private void stop_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _mediaTimelineController.Position = TimeSpan.FromSeconds(0);
+                _mediaTimelineController.Pause();
+                EllStoryboard.Stop();
+            }
+            catch
+            {
+
+            }
+
+        }*/
     }
 }

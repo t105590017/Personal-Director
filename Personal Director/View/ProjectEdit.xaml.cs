@@ -281,7 +281,7 @@ namespace Personal_Director
 
         private void Text_Click(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(TextEditPage));
+            this.Frame.Navigate(typeof(TextEditPage), _selectedStoryBoard);
         }
         #endregion
 
