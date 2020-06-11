@@ -18,7 +18,7 @@ namespace Personal_Director.ViewModels
 
         public StoryBoard StoryBoard { get; set; }
 
-        public string GetClippedMediaPath(TimeSpan startTime, TimeSpan endTime) 
+        public string GetProcessedMediaPath(TimeSpan startTime, TimeSpan endTime) 
         {
             VideoHandlerObject videoHandlerObject =  VideoHandler.SetSource(this.StoryBoard.Guid, this.StoryBoard.MediaSource.SourcePath)
                             .CutVideo(startTime, endTime);

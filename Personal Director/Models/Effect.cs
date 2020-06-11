@@ -8,6 +8,6 @@ namespace Personal_Director.Models
 {
     public interface Effect
     {
-        void ProcessEffect();
+        void Process();
     }
 }

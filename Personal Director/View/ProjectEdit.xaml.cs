@@ -55,42 +55,38 @@ namespace Personal_Director
             {
                 this.ViewModel.UpdateStoryBoard(e.Parameter as StoryBoard);
             }
-            else
-            {
-                throw new Exception("Model passing error!");
-            }
             base.OnNavigatedTo(e);
         }
 
         #region events
 
-        /// <summary>
-        /// 影片處理測試事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void ffmpegTest_Click(object sender, RoutedEventArgs e)
-        {
-            var picker = new Windows.Storage.Pickers.FileOpenPicker();
-            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
-            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
-            picker.FileTypeFilter.Add("*");
-            StorageFile file = await picker.PickSingleFileAsync();
+        ///// <summary>
+        ///// 影片處理測試事件
+        ///// </summary>
+        ///// <param name="sender"></param>
+        ///// <param name="e"></param>
+        //private async void ffmpegTest_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var picker = new Windows.Storage.Pickers.FileOpenPicker();
+        //    picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+        //    picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
+        //    picker.FileTypeFilter.Add("*");
+        //    StorageFile file = await picker.PickSingleFileAsync();
 
-            if (file != null)
-            {
-                Guid guid = Guid.NewGuid();
-                //guids.Add(guid.ToString());
+        //    if (file != null)
+        //    {
+        //        Guid guid = Guid.NewGuid();
+        //        //guids.Add(guid.ToString());
 
-                VideoHandler.SetSource(guid, file.Path)
-                            .CutVideo(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20))
-                            .AddTextToVideo(guid.ToString(), Production.Enum.VideoPosition.Center, System.Drawing.Color.Blue, fontsize: 72);
-                //if (guids.Count() == 3)
-                //{
-                //    VideoHandlerObject videoHandlerObject = VideoHandler.Export(guids.ToArray());
-                //}
-            }
-        }
+        //        VideoHandler.SetSource(guid, file.Path)
+        //                    .CutVideo(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20))
+        //                    .AddTextToVideo(guid.ToString(), Production.Enum.VideoPosition.Center, System.Drawing.Color.Blue, fontsize: 72);
+        //        //if (guids.Count() == 3)
+        //        //{
+        //        //    VideoHandlerObject videoHandlerObject = VideoHandler.Export(guids.ToArray());
+        //        //}
+        //    }
+        //}
 
         /// <summary>
         /// 按下上一頁按鈕
@@ -366,10 +362,17 @@ namespace Personal_Director
         {
             if (this._selectedStoryBoard != null)
             {
-                this.Frame.Navigate(typeof(TextEditPage));
+                this.Frame.Navigate(typeof(TextEditPage), _selectedStoryBoard);
             }
         }
 
+        //匯出影片
+        private void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
         #endregion
+
+
     }
 }

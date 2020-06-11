@@ -196,7 +196,7 @@ namespace Personal_Director.View
         /// <param name="e"></param>
         private async void finishButton_Click(object sender, RoutedEventArgs e)
         {
-            string outPutPath = this.ViewModel.GetClippedMediaPath(TimeSpan.FromSeconds(RangeSelectorControl.RangeMin), TimeSpan.FromSeconds(RangeSelectorControl.RangeMax));
+            string outPutPath = this.ViewModel.GetProcessedMediaPath(TimeSpan.FromSeconds(RangeSelectorControl.RangeMin), TimeSpan.FromSeconds(RangeSelectorControl.RangeMax));
 
             StorageFile file = await StorageFile.GetFileFromPathAsync(outPutPath);
             if (file != null)
