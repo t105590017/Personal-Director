@@ -67,6 +67,8 @@ namespace Personal_Director
 
                 VideoHandler.SetSource(guid, file.Path)
                             .CutVideo(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20))
+                            .ChangeVideoSpeed(4)
+                            .ChangeAudioSpeed(2).ChangeAudioSpeed(2)
                             .AddTextToVideo(guid.ToString(), Production.Enum.VideoPosition.Center, System.Drawing.Color.Blue, fontsize: 72);
                 if(guids.Count() == 3)
                     VideoHandler.Export(guids.ToArray());

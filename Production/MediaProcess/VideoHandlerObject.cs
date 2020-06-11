@@ -17,15 +17,18 @@ namespace Production.MediaProcess
         public string SourcePath { get => $"{this.WorkPath}\\Source{this.FielType}"; }
         public string OutputPath { get => $"{this.WorkPath}\\Output{this.FielType}"; }
         private string OutputPathOld { get => $"{this.WorkPath}\\Output.old{this.FielType}"; }
-        public string WorkPath { get => this.Guid == null ? $"{ApplicationData.Current.LocalFolder.Path}\\MediaProcess"
-                                                           : $"{ApplicationData.Current.LocalFolder.Path}\\MediaProcess\\{this.Guid}"; }
+        public string WorkPath
+        {
+            get => this.Guid == null ? $"{ApplicationData.Current.LocalFolder.Path}\\MediaProcess"
+                                      : $"{ApplicationData.Current.LocalFolder.Path}\\MediaProcess\\{this.Guid}";
+        }
         private string Guid { get; set; }
 
         /// <summary>
         /// 在 MediaProcess/guid下工作
         /// </summary>
-        /// <param name="guid"></param>
-        /// <param name="filePath"></param>
+        /// <param name="guid">資料夾guid</param>
+        /// <param name="filePath">來源檔案路徑</param>
         public VideoHandlerObject(Guid guid, string filePath)
         {
             this.Guid = guid.ToString();
@@ -36,14 +39,14 @@ namespace Production.MediaProcess
             }
             catch
             {
-               
+
                 var folder = StorageFolder.GetFolderFromPathAsync(ApplicationData.Current.LocalFolder.Path + "\\MediaProcess").AsTask().GetAwaiter().GetResult()
                                           .CreateFolderAsync(this.Guid).AsTask().GetAwaiter().GetResult();
                 var source = StorageFile.GetFileFromPathAsync(filePath).AsTask().GetAwaiter().GetResult();
-                source.CopyAsync(folder).AsTask().GetAwaiter().GetResult()
-                      .RenameAsync($"Source{this.FielType}").AsTask().GetAwaiter().GetResult();
-                source.CopyAsync(folder).AsTask().GetAwaiter().GetResult()
-                      .RenameAsync($"Output{this.FielType}").AsTask().GetAwaiter().GetResult();
+                source.CopyAsync(folder, $"Source{this.FielType}").AsTask().GetAwaiter().GetResult();
+                //.RenameAsync($"Source{this.FielType}").AsTask().GetAwaiter().GetResult();
+                source.CopyAsync(folder, $"Output{this.FielType}").AsTask().GetAwaiter().GetResult();
+                //.RenameAsync($"Output{this.FielType}").AsTask().GetAwaiter().GetResult();
             }
         }
 
@@ -91,11 +94,11 @@ namespace Production.MediaProcess
         /// <param name="begin">開始時間</param>
         /// <param name="end">結束時間</param>
         /// <returns></returns>
-        public VideoHandlerObject CutVideo(TimeSpan begin, TimeSpan end) 
+        public VideoHandlerObject CutVideo(TimeSpan begin, TimeSpan end)
         {
             bool isExist = this.IsFileExist($"{this.WorkPath}\\Output{this.FielType}");
             Process process = this.GetVideoProcess();
-            process.StartInfo.Arguments = $"-i {(isExist ? this.OutputPathOld: this.SourcePath)} " +
+            process.StartInfo.Arguments = $"-i {(isExist ? this.OutputPathOld : this.SourcePath)} " +
                                           $"-ss {begin.ToString()} " +
                                           $"-t {(end - begin).ToString()} " +
                                           $"{this.OutputPath}";
@@ -150,7 +153,7 @@ namespace Production.MediaProcess
         /// <param name="fontfile">C:/Windows/Fonts/ 下的 font file name</param>
         /// <param name="fontsize">文字大小</param>
         /// <returns></returns>
-        private VideoHandlerObject AddTextToVideo(string text, string position, Color fontcolor, string fontfile , int fontsize)
+        private VideoHandlerObject AddTextToVideo(string text, string position, Color fontcolor, string fontfile, int fontsize)
         {
             bool isExist = this.IsFileExist($"{this.WorkPath}\\Output{this.FielType}");
             Process process = this.GetVideoProcess();
@@ -175,6 +178,71 @@ namespace Production.MediaProcess
             }
 
             return this;
+        }
+
+        /// <summary>
+        /// 修改影像速度
+        /// </summary>
+        /// <param name="multiple">倍率 [0.25, 4]</param>
+        /// <param name="noAudio">是否禁音</param>
+        /// <returns></returns>
+        public VideoHandlerObject ChangeVideoSpeed(double multiple, bool noAudio = false)
+        {
+            if (multiple > 4 || multiple < 0.25)
+            {
+                throw new Exception("倍率區間 [0.25, 4]！！");
+            }
+            bool isExist = this.IsFileExist($"{this.WorkPath}\\Output{this.FielType}");
+            Process process = this.GetVideoProcess();
+            process.StartInfo.Arguments = $"-i {(isExist ? this.OutputPathOld : this.SourcePath)} " +
+                                          $"{(noAudio ? "-an" : "")} " + // 是否禁音
+                                          $"-filter:v  \"setpts=PTS/{multiple.ToString("0.00")}\" " +
+                                          $"{this.WorkPath}\\Output{this.FielType}";
+
+            process.Start();
+            process.WaitForExit();
+            process.Close();
+
+            if (isExist)
+            {
+                StorageFile.GetFileFromPathAsync($"{this.WorkPath}\\Output.old{this.FielType}").AsTask().GetAwaiter().GetResult()
+                           .DeleteAsync().AsTask().GetAwaiter().GetResult();
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="multiple">倍率 [0.5, 2]</param>
+        /// <param name="noVideo">是否刪除影像</param>
+        /// <returns></returns>
+        public VideoHandlerObject ChangeAudioSpeed(double multiple, bool noVideo = false)
+        {
+            if (multiple > 2 || multiple < 0.5)
+            {
+                throw new Exception("倍率區間 [0.5, 2]！！");
+            }
+            bool isExist = this.IsFileExist($"{this.WorkPath}\\Output{this.FielType}");
+            Process process = this.GetVideoProcess();
+            process.StartInfo.Arguments = $"-i {(isExist ? this.OutputPathOld : this.SourcePath)} " +
+                                          $"{(noVideo ? "-vn" : "")} " + // 是否刪除影像
+                                          $"-filter:a \"atempo={multiple.ToString("0.00")}\" " +
+                                          $"{this.WorkPath}\\Output{this.FielType}";
+
+            process.Start();
+            process.WaitForExit();
+            process.Close();
+
+            if (isExist)
+            {
+                StorageFile.GetFileFromPathAsync($"{this.WorkPath}\\Output.old{this.FielType}").AsTask().GetAwaiter().GetResult()
+                           .DeleteAsync().AsTask().GetAwaiter().GetResult();
+            }
+
+            return this;
+
         }
 
         /// <summary>
