@@ -274,7 +274,7 @@ namespace Personal_Director
                 //this.textBlock.Text = "Operation cancelled.";
             }
         }
-
+       
         private async void MediaCabinetList_ItemClick(object sender, ItemClickEventArgs e)
         {
             Media item = e.ClickedItem as Media;
