@@ -11,6 +11,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media.Core;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.UI.Xaml;
@@ -274,17 +275,6 @@ namespace Personal_Director
             }
         }
 
-        private void Clip_Click(object sender, RoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(ClipEditPage), _selectedStoryBoard);
-        }
-
-        private void Text_Click(object sender, RoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(TextEditPage));
-        }
-        #endregion
-
         private async void MediaCabinetList_ItemClick(object sender, ItemClickEventArgs e)
         {
             Media item = e.ClickedItem as Media;
@@ -299,20 +289,32 @@ namespace Personal_Director
 
         private async void StoryBoardScriptList_ItemClick(object sender, ItemClickEventArgs e)
         {
-            _selectedStoryBoard = e.ClickedItem as StoryBoard;
+            this._selectedStoryBoard = e.ClickedItem as StoryBoard;
 
-            Windows.Storage.StorageFile file = await Windows.Storage.StorageFile.GetFileFromPathAsync(_selectedStoryBoard.MediaSource.SourcePath);
+            StorageFile file = await StorageFile.GetFileFromPathAsync(_selectedStoryBoard.MediaSource.SourcePath);
             if (file != null)
             {
-                var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
-                this.MediaPreView.Source = Windows.Media.Core.MediaSource.CreateFromStream(stream, file.ContentType);
+                var stream = await file.OpenAsync(FileAccessMode.Read);
+                this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
             }
         }
 
-        private void StoryBoardScriptList_FocusDisengaged(Control sender, FocusDisengagedEventArgs args)
+        private void ClipButton_Click(object sender, RoutedEventArgs e)
         {
-            this.ClipButton.IsEnabled = false;
-            this.AddTextButton.IsEnabled = false;
+            if (this._selectedStoryBoard != null)
+            {
+                this.Frame.Navigate(typeof(ClipEditPage), _selectedStoryBoard);
+            }
         }
+
+        private void AddTextButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (this._selectedStoryBoard != null)
+            {
+                this.Frame.Navigate(typeof(TextEditPage));
+            }
+        }
+
+        #endregion
     }
 }
