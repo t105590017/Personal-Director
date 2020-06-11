@@ -126,6 +126,8 @@
     <Compile Include="Models\StoryBoard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewExtend\GridViewEx.cs" />
+    <Compile Include="ViewModels\TextEditPageViewModel.cs" />
+    <Compile Include="ViewModels\ClipEditPageViewModel.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
     <Compile Include="ViewModels\ProjectEditViewModel.cs" />
     <Compile Include="View\ClipEditPage.xaml.cs">

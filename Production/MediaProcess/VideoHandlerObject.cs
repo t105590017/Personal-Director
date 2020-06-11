@@ -82,7 +82,6 @@ namespace Production.MediaProcess
             {
                 return false;
             }
-            return true;
         }
 
         /// <summary>

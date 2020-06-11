@@ -63,6 +63,7 @@ namespace Personal_Director.Models
         public void InsertStoryBoardIntoScriptData(int index, StoryBoard storyboard)
         {
             this._storyBoardScriptData.Insert(index, storyboard);
+            this.Project.InsertStoryBoardIntoScriptJson(index, storyboard);
         }
 
         //新增分鏡至分鏡腳本
@@ -77,6 +78,14 @@ namespace Personal_Director.Models
             this._storyBoardScriptData.Remove(storyboard);
         }
 
-        
+        /// <summary>
+        /// 更新StoryBoard
+        /// </summary>
+        /// <param name="updatedStoryBoard"></param>
+        internal void UpdateStoryBoard(StoryBoard updatedStoryBoard)
+        {
+            var storyBoard = this._storyBoardScriptData.FirstOrDefault(x => x.Guid == updatedStoryBoard.Guid);
+            this._storyBoardScriptData[this._storyBoardScriptData.IndexOf(storyBoard)] = updatedStoryBoard;
+        }
     }
 }

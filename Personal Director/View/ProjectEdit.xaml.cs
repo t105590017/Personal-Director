@@ -11,6 +11,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media.Core;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.UI.Xaml;
@@ -26,59 +27,81 @@ namespace Personal_Director
 {
     public sealed partial class ProjectEdit : Page
     {
-        private Project Project { get; set; }
-        private bool IsPutAwayMediaCabinet { get; set; } = true;
-        private string MediaSelectGuid { get; set; }
+        private bool _isPutAwayMediaCabinet  = true;
 
-        private ProjectEditViewModel ViewModel { get; set; }
+        private string _mediaSelectGuid;
+
+        private StoryBoard _selectedStoryBoard;
+
+        ProjectEditViewModel ViewModel { get; set; }
 
         public ProjectEdit()
         {
+            this.NavigationCacheMode = NavigationCacheMode.Required;
             this.InitializeComponent();
-            //TODO: models起始位置應該在HomePage
         }
 
+        /// <summary>
+        /// 複寫OnNavigateTo
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter is Model)
+            if (e.Parameter is Model && this.ViewModel == null)
             {
                 this.ViewModel = new ProjectEditViewModel((Model)e.Parameter);
             }
-            else
+            else if (e.Parameter is StoryBoard)
             {
-                throw new Exception("Model passing error!");
+                this.ViewModel.UpdateStoryBoard(e.Parameter as StoryBoard);
             }
             base.OnNavigatedTo(e);
         }
 
-        private List<string> guids = new List<string>();
-        private async void ffmpegTest_Click(object sender, RoutedEventArgs e)
-        {
-            var picker = new Windows.Storage.Pickers.FileOpenPicker();
-            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
-            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
-            picker.FileTypeFilter.Add("*");
-            StorageFile file = await picker.PickSingleFileAsync();
+        #region events
 
-            if (file != null)
-            {
-                Guid guid = Guid.NewGuid();
-                guids.Add(guid.ToString());
+        ///// <summary>
+        ///// 影片處理測試事件
+        ///// </summary>
+        ///// <param name="sender"></param>
+        ///// <param name="e"></param>
+        //private async void ffmpegTest_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var picker = new Windows.Storage.Pickers.FileOpenPicker();
+        //    picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+        //    picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
+        //    picker.FileTypeFilter.Add("*");
+        //    StorageFile file = await picker.PickSingleFileAsync();
 
-                VideoHandler.SetSource(guid, file.Path)
-                            .CutVideo(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20))
-                            .AddTextToVideo(guid.ToString(), Production.Enum.VideoPosition.Center, System.Drawing.Color.Blue, fontsize: 72);
-                if(guids.Count() == 3)
-                    VideoHandler.Export(guids.ToArray());
-            }
-        }
+        //    if (file != null)
+        //    {
+        //        Guid guid = Guid.NewGuid();
+        //        //guids.Add(guid.ToString());
 
-        #region event
+        //        VideoHandler.SetSource(guid, file.Path)
+        //                    .CutVideo(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20))
+        //                    .AddTextToVideo(guid.ToString(), Production.Enum.VideoPosition.Center, System.Drawing.Color.Blue, fontsize: 72);
+        //        //if (guids.Count() == 3)
+        //        //{
+        //        //    VideoHandlerObject videoHandlerObject = VideoHandler.Export(guids.ToArray());
+        //        //}
+        //    }
+        //}
+
+        /// <summary>
+        /// 按下上一頁按鈕
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PrePage_Click(object sender, RoutedEventArgs e)
         {
             On_BackRequested();
         }
 
+        /// <summary>
+        /// 是否可回上一頁
+        /// </summary>
+        /// <returns></returns>
         private bool On_BackRequested()
         {
             if (this.Frame.CanGoBack)
@@ -89,20 +112,11 @@ namespace Personal_Director
             return false;
         }
 
-        //protected override void OnNavigatedTo(NavigationEventArgs e)
-        //{
-        //    if (e.Parameter is Project)
-        //    {
-        //        Project = (Project)e.Parameter;
-        //    }
-        //    else
-        //    {
-        //        throw new Exception("ne project !!");
-        //    }
-        //    base.OnNavigatedTo(e);
-        //}
-
-        //新增媒體至媒體櫃
+        /// <summary>
+        /// 新增媒體至媒體櫃
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void AddMedia_ClickAsync(object sender, RoutedEventArgs e)
         {
             var picker = new Windows.Storage.Pickers.FileOpenPicker();
@@ -110,11 +124,11 @@ namespace Personal_Director
             picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
             picker.FileTypeFilter.Add("*");
 
-            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+            StorageFile file = await picker.PickSingleFileAsync();
             if (file != null)
             {
-                var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
-                this.MediaPreView.Source = Windows.Media.Core.MediaSource.CreateFromStream(stream, file.ContentType);
+                var stream = await file.OpenAsync(FileAccessMode.Read);
+                this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
 
                 const uint requestedSize = 190;
                 const ThumbnailMode thumbnailMode = ThumbnailMode.VideosView;
@@ -124,7 +138,8 @@ namespace Personal_Director
                 Media media = new Media()
                 {
                     Thumbnail = image,
-                    Describe = file.Name
+                    Describe = file.Name,
+                    SourcePath = file.Path
                 };
                 this.ViewModel.AddMediaIntoCabinet(media);
                 this.ViewModel.AddMediaIntoProjectInfo(file.Path, media);
@@ -135,21 +150,26 @@ namespace Personal_Director
             }
         }
 
+        /// <summary>
+        /// 點擊收合展開媒體櫃按鈕
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PutAwayMediaCabinet_Click(object sender, RoutedEventArgs e)
         {
-            this.IsPutAwayMediaCabinet = !this.IsPutAwayMediaCabinet;
-            this.PutAwayMediaCabinetIcon.Glyph = this.IsPutAwayMediaCabinet ? "\uE76B"
+            this._isPutAwayMediaCabinet = !this._isPutAwayMediaCabinet;
+            this.PutAwayMediaCabinetIcon.Glyph = this._isPutAwayMediaCabinet ? "\uE76B"
                                                                             : "\uE76C";
-            this.MediaCabinetArea.Width = this.IsPutAwayMediaCabinet ? new GridLength(5, GridUnitType.Star)
+            this.MediaCabinetArea.Width = this._isPutAwayMediaCabinet ? new GridLength(5, GridUnitType.Star)
                                                                      : new GridLength(50);
-            MediaCabinetGrid();
+            this.MediaCabinetGrid();
             var panel = (ItemsWrapGrid)MediaCabinetList.ItemsPanelRoot;
-            panel.ItemWidth = this.IsPutAwayMediaCabinet ? 210 : 0;
+            panel.ItemWidth = this._isPutAwayMediaCabinet ? 210 : 0;
         }
 
         private void MediaCabinetGrid()
         {
-            if (this.IsPutAwayMediaCabinet)
+            if (this._isPutAwayMediaCabinet)
             {
                 this.MediaCabinetLeftArea.Width = new GridLength(40);
                 this.MediaCabinetGridArea.Width = new GridLength(1, GridUnitType.Star);
@@ -159,6 +179,11 @@ namespace Personal_Director
             this.MediaCabinetGridArea.Width = new GridLength(0);
         }
 
+        /// <summary>
+        /// 拖曳經過分鏡腳本時顯示連結提示
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MediaScriptList_DragOver(object sender, DragEventArgs e)
         {
             if(e.Data != null && e.Data.GetView().Contains("MediaDataGuid"))
@@ -169,6 +194,11 @@ namespace Personal_Director
             e.AcceptedOperation = DataPackageOperation.None;
         }
 
+        /// <summary>
+        /// 將媒體櫃放入分鏡腳本
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void MediaScriptList_Drop(object sender, DragEventArgs e)
         {
             var guid = await e.Data.GetView().GetTextAsync("MediaDataGuid");
@@ -178,7 +208,6 @@ namespace Personal_Director
             if (!this.ViewModel.GridViewStoryBoardScriptDataList.Any())
             {
                 this.ViewModel.InsertStoryBoardIntoScript(0, storyBoard.MediaSource);
-                this.ViewModel.AddStoryBoardIntoProjectInfo(storyBoard);
                 return;
             }
 
@@ -195,14 +224,18 @@ namespace Personal_Director
             int index = Math.Min(gridView.Items.Count - 1, (int)(pos.X / itemHeight));
 
             this.ViewModel.InsertStoryBoardIntoScript(index, storyBoard.MediaSource);
-            this.ViewModel.AddStoryBoardIntoProjectInfo(storyBoard);
         }
 
         private void StoryBoardDelete(object sender, RoutedEventArgs e)
         {
-            this.ViewModel.RemoveMediaFromScript(this.MediaSelectGuid);
+            this.ViewModel.RemoveMediaFromScript(this._mediaSelectGuid);
         }
 
+        /// <summary>
+        /// 點選媒體櫃，右鍵按下刪除
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void MediaCabinetDelete(object sender, RoutedEventArgs e)
         {
             // 彈出視窗 沒用
@@ -222,7 +255,7 @@ namespace Personal_Director
         private void RightTappedStoryBoard(object sender, RightTappedRoutedEventArgs e)
         {
             var flyout = this.StoryBoardCommandsFlyout;
-            this.MediaSelectGuid = ((Grid)sender).Tag.ToString();
+            this._mediaSelectGuid = ((Grid)sender).Tag.ToString();
             var options = new FlyoutShowOptions()
             {
                 Position = e.GetPosition((FrameworkElement)sender),
@@ -234,7 +267,7 @@ namespace Personal_Director
         private void RightTappedMediaCabinet(object sender, RightTappedRoutedEventArgs e)
         {
             var flyout = this.MediaCabinetCommandsFlyout;
-            this.MediaSelectGuid = ((Grid)sender).Tag.ToString();
+            this._mediaSelectGuid = ((Grid)sender).Tag.ToString();
             var options = new FlyoutShowOptions()
             {
                 Position = e.GetPosition((FrameworkElement)sender),
@@ -248,7 +281,11 @@ namespace Personal_Director
             e.Data.SetData("MediaDataGuid", (e.Items[0] as Media).Guid.ToString());
         }
 
-        //按下儲存專案, 選擇導出的路徑並儲存專案
+        /// <summary>
+        /// 按下儲存專案, 選擇導出的路徑並儲存專案
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void SaveProject_Click(object sender, RoutedEventArgs e)
         {
             var savePicker = new Windows.Storage.Pickers.FileSavePicker();
@@ -283,18 +320,59 @@ namespace Personal_Director
                 //this.textBlock.Text = "Operation cancelled.";
             }
         }
-
-        private void Clip_Click(object sender, RoutedEventArgs e)
+       
+        private async void MediaCabinetList_ItemClick(object sender, ItemClickEventArgs e)
         {
+            Media item = e.ClickedItem as Media;
 
-            //this.Frame.Navigate(typeof(ClipPage));
-            this.Frame.Navigate(typeof(ClipEditPage));
+            StorageFile file = await StorageFile.GetFileFromPathAsync(item.SourcePath);
+            if (file != null) 
+            {
+                var stream = await file.OpenAsync(FileAccessMode.Read);
+                this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
+            }
         }
 
-        private void Text_Click(object sender, RoutedEventArgs e)
+        private async void StoryBoardScriptList_ItemClick(object sender, ItemClickEventArgs e)
         {
-            this.Frame.Navigate(typeof(TextEditPage));
+            //如果不是點擊同一個腳本才更新UI
+            if (this._selectedStoryBoard != e.ClickedItem as StoryBoard)
+            {
+                this._selectedStoryBoard = e.ClickedItem as StoryBoard;
+
+                StorageFile file = await StorageFile.GetFileFromPathAsync(_selectedStoryBoard.MediaSource.SourcePath);
+                if (file != null)
+                {
+                    var stream = await file.OpenAsync(FileAccessMode.Read);
+                    this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
+                }
+            }
+        }
+
+        private void ClipButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (this._selectedStoryBoard != null)
+            {
+                this.Frame.Navigate(typeof(ClipEditPage), _selectedStoryBoard);
+                this._selectedStoryBoard = null;
+            }
+        }
+
+        private void AddTextButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (this._selectedStoryBoard != null)
+            {
+                this.Frame.Navigate(typeof(TextEditPage), _selectedStoryBoard);
+            }
+        }
+
+        //匯出影片
+        private void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
         #endregion
+
+
     }
 }
