@@ -212,7 +212,7 @@ namespace Production.MediaProcess
         }
 
         /// <summary>
-        /// 
+        /// 修改音訊速度
         /// </summary>
         /// <param name="multiple">倍率 [0.5, 2]</param>
         /// <param name="noVideo">是否刪除影像</param>
