@@ -63,6 +63,7 @@ namespace Personal_Director.Models
         public void InsertStoryBoardIntoScriptData(int index, StoryBoard storyboard)
         {
             this._storyBoardScriptData.Insert(index, storyboard);
+            this.Project.InsertStoryBoardIntoScriptJson(index, storyboard);
         }
 
         //新增分鏡至分鏡腳本

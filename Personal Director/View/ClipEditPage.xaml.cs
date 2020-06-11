@@ -24,6 +24,7 @@ using Personal_Director.Converter;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using Personal_Director.Models;
 using Personal_Director.ViewModels;
+using Windows.Storage.FileProperties;
 
 // 空白頁項目範本已記錄在 https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -151,6 +152,7 @@ namespace Personal_Director.View
                 timer.Interval = TimeSpan.FromSeconds(1);
                 timer.Tick += Timer_Tick;
                 timeLine.Value = ((TimeSpan)_mediaTimelineController.Position).TotalSeconds;
+
                 //textBlock.Text = GenTimeSpanFromSeconds(Math.Round(timeLine.Value));
 
                 lowerTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMin));
@@ -191,58 +193,31 @@ namespace Personal_Director.View
             return false;
         }
 
-        /*private void pause_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 按下完成按鈕後處理影片
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void finishButton_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                if (_mediaTimelineController.State == MediaTimelineControllerState.Running)
-                {
-                    EllStoryboard.Pause();
-                    _mediaTimelineController.Pause();
-                }
-                else
-                {
-                    //EllStoryboard.Resume();
-                    EllStoryboard.Begin();
-                    _mediaTimelineController.Resume();
-                }
-            }
-            catch
-            {
+            string outPutPath = this.ViewModel.GetClippedMediaPath(TimeSpan.FromSeconds(RangeSelectorControl.RangeMin), TimeSpan.FromSeconds(RangeSelectorControl.RangeMax));
 
+            StorageFile file = await StorageFile.GetFileFromPathAsync(outPutPath);
+            if (file != null)
+            {
+                var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                const uint requestedSize = 190;
+                const ThumbnailMode thumbnailMode = ThumbnailMode.VideosView;
+                const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
+                var image = new BitmapImage();
+                image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
+                this.ViewModel.StoryBoard.MediaSource = new Media
+                {
+                    Thumbnail = image,
+                    Describe = file.Name,
+                    SourcePath = file.Path
+                };
             }
         }
-
-        private void start_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                DispatcherTimer timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromSeconds(1);
-                timer.Tick += timer_Tick;
-                timer.Start();
-                EllStoryboard.Begin();
-                _mediaTimelineController.Start();
-            }
-            catch
-            {
-
-            }
-
-        }*/
-        /*private void stop_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                _mediaTimelineController.Position = TimeSpan.FromSeconds(0);
-                _mediaTimelineController.Pause();
-                EllStoryboard.Stop();
-            }
-            catch
-            {
-
-            }
-
-        }*/
     }
 }

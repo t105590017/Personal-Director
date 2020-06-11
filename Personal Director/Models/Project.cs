@@ -52,7 +52,11 @@ namespace Personal_Director.Models
             return result.ToString();
         }
 
-        //將新增的Media寫入JsonArray
+        /// <summary>
+        /// 將新增的Media寫入JsonArray
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="media"></param>
         public void AddMediaIntoCabinetJson(string path, Media media) 
         {
             JsonObject jsonObject = new JsonObject();
@@ -61,12 +65,27 @@ namespace Personal_Director.Models
             this._mediaCabinetJson.Add(jsonObject);
         }
 
-        //將新增的StoryBoard寫入JsonArray
+        /// <summary>
+        /// 將新增的StoryBoard寫入JsonArray
+        /// </summary>
+        /// <param name="storyBoard"></param>
         public void AddStoryBoardIntoScriptJson(StoryBoard storyBoard)
         {
             JsonObject jsonObject = new JsonObject();
             jsonObject.Add("Guid", JsonValue.CreateStringValue(storyBoard.MediaSource.Guid.ToString()));
             this._scriptJson.Add(jsonObject);
+        }
+
+        /// <summary>
+        /// 將新增的StoryBoard寫入JsonArray
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="storyBoard"></param>
+        public void InsertStoryBoardIntoScriptJson(int index, StoryBoard storyBoard)
+        {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.Add("Guid", JsonValue.CreateStringValue(storyBoard.MediaSource.Guid.ToString()));
+            this._scriptJson.Insert(index, jsonObject);
         }
 
         public List<string> GetMediaCabinetPaths()

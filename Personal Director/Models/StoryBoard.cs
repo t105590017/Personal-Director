@@ -8,15 +8,18 @@ namespace Personal_Director.Models
 {
     public class StoryBoard
     {
-        public Media MediaSource { get;}
+        public Media MediaSource { get; set; }
 
         private List<Effect> _effects;
 
         public StoryBoard(Media media)
         {
+            this.Guid = Guid.NewGuid();
             this.MediaSource = media;
             this._effects = new List<Effect>();
         }
+
+        public Guid Guid { get; private set; }
 
         public void AddEffect(Effect effect)
         {
