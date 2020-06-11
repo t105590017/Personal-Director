@@ -78,6 +78,14 @@ namespace Personal_Director.Models
             this._storyBoardScriptData.Remove(storyboard);
         }
 
-        
+        /// <summary>
+        /// 更新StoryBoard
+        /// </summary>
+        /// <param name="updatedStoryBoard"></param>
+        internal void UpdateStoryBoard(StoryBoard updatedStoryBoard)
+        {
+            var storyBoard = this._storyBoardScriptData.FirstOrDefault(x => x.Guid == updatedStoryBoard.Guid);
+            this._storyBoardScriptData[this._storyBoardScriptData.IndexOf(storyBoard)] = updatedStoryBoard;
+        }
     }
 }

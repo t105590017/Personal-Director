@@ -27,16 +27,17 @@ namespace Personal_Director
 {
     public sealed partial class ProjectEdit : Page
     {
-        private Project Project { get; set; }
-        private bool IsPutAwayMediaCabinet { get; set; } = true;
-        private string MediaSelectGuid { get; set; }
+        private bool _isPutAwayMediaCabinet  = true;
+
+        private string _mediaSelectGuid;
 
         private StoryBoard _selectedStoryBoard;
 
-        private ProjectEditViewModel ViewModel { get; set; }
+        ProjectEditViewModel ViewModel { get; set; }
 
         public ProjectEdit()
         {
+            this.NavigationCacheMode = NavigationCacheMode.Required;
             this.InitializeComponent();
         }
 
@@ -46,9 +47,13 @@ namespace Personal_Director
         /// <param name="e"></param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter is Model)
+            if (e.Parameter is Model && this.ViewModel == null)
             {
                 this.ViewModel = new ProjectEditViewModel((Model)e.Parameter);
+            }
+            else if (e.Parameter is StoryBoard)
+            {
+                this.ViewModel.UpdateStoryBoard(e.Parameter as StoryBoard);
             }
             else
             {
@@ -57,7 +62,7 @@ namespace Personal_Director
             base.OnNavigatedTo(e);
         }
 
-        #region event
+        #region events
 
         /// <summary>
         /// 影片處理測試事件
@@ -156,19 +161,19 @@ namespace Personal_Director
         /// <param name="e"></param>
         private void PutAwayMediaCabinet_Click(object sender, RoutedEventArgs e)
         {
-            this.IsPutAwayMediaCabinet = !this.IsPutAwayMediaCabinet;
-            this.PutAwayMediaCabinetIcon.Glyph = this.IsPutAwayMediaCabinet ? "\uE76B"
+            this._isPutAwayMediaCabinet = !this._isPutAwayMediaCabinet;
+            this.PutAwayMediaCabinetIcon.Glyph = this._isPutAwayMediaCabinet ? "\uE76B"
                                                                             : "\uE76C";
-            this.MediaCabinetArea.Width = this.IsPutAwayMediaCabinet ? new GridLength(5, GridUnitType.Star)
+            this.MediaCabinetArea.Width = this._isPutAwayMediaCabinet ? new GridLength(5, GridUnitType.Star)
                                                                      : new GridLength(50);
             this.MediaCabinetGrid();
             var panel = (ItemsWrapGrid)MediaCabinetList.ItemsPanelRoot;
-            panel.ItemWidth = this.IsPutAwayMediaCabinet ? 210 : 0;
+            panel.ItemWidth = this._isPutAwayMediaCabinet ? 210 : 0;
         }
 
         private void MediaCabinetGrid()
         {
-            if (this.IsPutAwayMediaCabinet)
+            if (this._isPutAwayMediaCabinet)
             {
                 this.MediaCabinetLeftArea.Width = new GridLength(40);
                 this.MediaCabinetGridArea.Width = new GridLength(1, GridUnitType.Star);
@@ -227,7 +232,7 @@ namespace Personal_Director
 
         private void StoryBoardDelete(object sender, RoutedEventArgs e)
         {
-            this.ViewModel.RemoveMediaFromScript(this.MediaSelectGuid);
+            this.ViewModel.RemoveMediaFromScript(this._mediaSelectGuid);
         }
 
         /// <summary>
@@ -254,7 +259,7 @@ namespace Personal_Director
         private void RightTappedStoryBoard(object sender, RightTappedRoutedEventArgs e)
         {
             var flyout = this.StoryBoardCommandsFlyout;
-            this.MediaSelectGuid = ((Grid)sender).Tag.ToString();
+            this._mediaSelectGuid = ((Grid)sender).Tag.ToString();
             var options = new FlyoutShowOptions()
             {
                 Position = e.GetPosition((FrameworkElement)sender),
@@ -266,7 +271,7 @@ namespace Personal_Director
         private void RightTappedMediaCabinet(object sender, RightTappedRoutedEventArgs e)
         {
             var flyout = this.MediaCabinetCommandsFlyout;
-            this.MediaSelectGuid = ((Grid)sender).Tag.ToString();
+            this._mediaSelectGuid = ((Grid)sender).Tag.ToString();
             var options = new FlyoutShowOptions()
             {
                 Position = e.GetPosition((FrameworkElement)sender),
@@ -324,23 +329,27 @@ namespace Personal_Director
         {
             Media item = e.ClickedItem as Media;
 
-            Windows.Storage.StorageFile file = await Windows.Storage.StorageFile.GetFileFromPathAsync(item.SourcePath);
+            StorageFile file = await StorageFile.GetFileFromPathAsync(item.SourcePath);
             if (file != null) 
             {
-                var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
-                this.MediaPreView.Source = Windows.Media.Core.MediaSource.CreateFromStream(stream, file.ContentType);
+                var stream = await file.OpenAsync(FileAccessMode.Read);
+                this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
             }
         }
 
         private async void StoryBoardScriptList_ItemClick(object sender, ItemClickEventArgs e)
         {
-            this._selectedStoryBoard = e.ClickedItem as StoryBoard;
-
-            StorageFile file = await StorageFile.GetFileFromPathAsync(_selectedStoryBoard.MediaSource.SourcePath);
-            if (file != null)
+            //如果不是點擊同一個腳本才更新UI
+            if (this._selectedStoryBoard != e.ClickedItem as StoryBoard)
             {
-                var stream = await file.OpenAsync(FileAccessMode.Read);
-                this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
+                this._selectedStoryBoard = e.ClickedItem as StoryBoard;
+
+                StorageFile file = await StorageFile.GetFileFromPathAsync(_selectedStoryBoard.MediaSource.SourcePath);
+                if (file != null)
+                {
+                    var stream = await file.OpenAsync(FileAccessMode.Read);
+                    this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
+                }
             }
         }
 
@@ -349,6 +358,7 @@ namespace Personal_Director
             if (this._selectedStoryBoard != null)
             {
                 this.Frame.Navigate(typeof(ClipEditPage), _selectedStoryBoard);
+                this._selectedStoryBoard = null;
             }
         }
 

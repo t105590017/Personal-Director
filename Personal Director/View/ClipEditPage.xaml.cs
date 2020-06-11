@@ -53,7 +53,7 @@ namespace Personal_Director.View
         {
             if (e.Parameter is StoryBoard)
             {
-                this.ViewModel = new ClipEditPageViewModel((StoryBoard)e.Parameter);
+                this.ViewModel = new ClipEditPageViewModel(e.Parameter as StoryBoard);
                 this.LoadMedia();
             }
             else
@@ -82,7 +82,7 @@ namespace Personal_Director.View
                 timer.Interval = TimeSpan.FromSeconds(1);
                 timer.Tick += Timer_Tick;
                 timer.Start();
-                timeLine.Value = ((TimeSpan)_mediaTimelineController.Position).TotalSeconds;
+                timeLine.Value = _mediaTimelineController.Position.TotalSeconds;
 
                 lowerTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMin));
                 upperTime.Text = GenTimeSpanFromSeconds(Math.Round(RangeSelectorControl.RangeMax));
@@ -91,26 +91,22 @@ namespace Personal_Director.View
 
         private void Start_pause_Click(object sender, RoutedEventArgs e)
         {
-
-            try
+            if (_mediaTimelineController.State == MediaTimelineControllerState.Running)
             {
-                if (_mediaTimelineController.State == MediaTimelineControllerState.Running)
-                {
-                    EllStoryboard.Pause();
-                    _mediaTimelineController.Pause();
-                    start_pause.Icon = new SymbolIcon(Symbol.Play);
-                }
-                else
-                {
-                    //EllStoryboard.Resume();
-                    EllStoryboard.Begin();
-                    _mediaTimelineController.Resume();
-                    start_pause.Icon = new SymbolIcon(Symbol.Pause);
-                }
+                EllStoryboard.Pause();
+                this._mediaTimelineController.Pause();
+                start_pause.Icon = new SymbolIcon(Symbol.Play);
             }
-            catch
+            else
             {
-
+                if (_mediaTimelineController.Position.TotalSeconds < RangeSelectorControl.RangeMin)
+                {
+                    this._mediaTimelineController.Position = TimeSpan.FromSeconds(RangeSelectorControl.RangeMin);
+                    EllStoryboard.BeginTime = this._mediaTimelineController.Position;
+                }
+                EllStoryboard.Begin();
+                this._mediaTimelineController.Resume();
+                start_pause.Icon = new SymbolIcon(Symbol.Pause);
             }
 
         }
@@ -217,6 +213,8 @@ namespace Personal_Director.View
                     Describe = file.Name,
                     SourcePath = file.Path
                 };
+
+                this.Frame.Navigate(typeof(ProjectEdit), this.ViewModel.StoryBoard);
             }
         }
     }
