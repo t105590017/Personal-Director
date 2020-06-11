@@ -90,7 +90,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
     </Page.Resources>
 
 
@@ -132,25 +132,24 @@
             </Grid>
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="0.5*"/>
-                    <ColumnDefinition Width="0.5*"/>
-                    <ColumnDefinition Width="0.5*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="8*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="80*"/>
+                    <ColumnDefinition Width="80*"/>
+                    <ColumnDefinition Width="107*"/>
+                    <ColumnDefinition Width="693*"/>
+                    <ColumnDefinition Width="80*"/>
+                    <ColumnDefinition Width="80*"/>
+                    <ColumnDefinition Width="80*"/>
                 </Grid.ColumnDefinitions>
-                <AppBarButton Grid.Column="1" Name="start" Icon="Play" FontSize="20" Width="30" Height="40" Click="start_Click" HorizontalAlignment="Left"/>
-                <AppBarButton Grid.Column="2" Name="pause" Icon="Pause" FontSize="20" Width="30" Height="40" Click="pause_Click" />
-                <TextBlock x:Name="lowerTime" Grid.Column="4" Margin="28,8,0,0"
-                       HorizontalAlignment="Left"  Text="00:00:00" Grid.RowSpan="2"  TextWrapping="Wrap" VerticalAlignment="Top"/>
-                <Slider Grid.Column="4" Padding="20,5,20,0"  x:Name="timeLine"  Style="{StaticResource MySlider}"
-                    Value="{x:Bind _mediaTimelineController.Position, Converter={StaticResource converter},Mode=TwoWay}" Margin="72.6,0,81.2,0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                <TextBlock x:Name="upperTime" Grid.Column="6" Margin="0,8,0,0"
-                       HorizontalAlignment="Left"  Text="00:00:00"  Grid.RowSpan="2"  TextWrapping="Wrap" VerticalAlignment="Top"/>
 
-                <controls:RangeSelector Grid.Column="5" x:Name="RangeSelectorControl"  Margin="9.8,6,10.4,0" StepFrequency="1" VerticalAlignment="Top"/>
+                <AppBarButton Grid.Column="1" Name="start_pause" Icon="Play" FontSize="20"  Margin="30,0,0,0" Width="30" Height="40" Click="Start_pause_Click" />
+                <TextBlock x:Name="lowerTime" Grid.Column="2" Margin="0,8,0,0"
+                       HorizontalAlignment="Center"  Text="00:00:00"  TextWrapping="Wrap" VerticalAlignment="Top"/>
+                <Slider Grid.Column="2" Padding="20,5,20,0"  x:Name="timeLine"  Style="{StaticResource MySlider}"
+                    Value="{x:Bind _mediaTimelineController.Position, Converter={StaticResource converter},Mode=TwoWay}" Margin="75,0,1,0" Grid.ColumnSpan="3"/>
+                <TextBlock x:Name="upperTime" Grid.Column="5" Margin="0,8,0,0"
+                       HorizontalAlignment="Left"  Text="00:00:00"  TextWrapping="Wrap" VerticalAlignment="Top"/>
+
+                <controls:RangeSelector Grid.Column="2" x:Name="RangeSelectorControl" Margin="102,6,23,0" StepFrequency="1" Grid.ColumnSpan="3"/>
 
             </Grid>
             <!--<TextBlock x:Name="textBlock" 
@@ -161,7 +160,7 @@
 
         </Grid>
         <Grid Grid.Column="1">
-            <Button x:Name="button1" Content="完成" Background="RoyalBlue"   Width="125" HorizontalAlignment="Left" Margin="15,0,0,30" VerticalAlignment="Bottom"/>
+            <Button x:Name="finishButton" Content="完成" Background="RoyalBlue"   Width="125" HorizontalAlignment="Left" Margin="15,0,0,30" VerticalAlignment="Bottom" Click="finishButton_Click"/>
             <Button x:Name="button2" Content="取消" Width="125" HorizontalAlignment="Right" Margin="0,0,15,30" VerticalAlignment="Bottom" Click="PrePage_Click"/>
             <TextBlock  HorizontalAlignment="Center" Margin="0,41,0,0" FontSize="22" FontWeight="Bold" Text="修剪" TextWrapping="Wrap" VerticalAlignment="Top"/>
             <TextBlock  HorizontalAlignment="Left" Margin="33,107,0,0" FontSize="20"  Text="影片長度" TextWrapping="Wrap" VerticalAlignment="Top"/>

@@ -20,17 +20,12 @@ namespace Personal_Director.Models
             this.Guid = guid;
         }
 
-        public Media(Media media)
-        {
-            this.Guid = media.Guid;
-            this.Thumbnail = media.Thumbnail;
-            this.Describe = media.Describe;
-        }
-
         public Guid Guid { get; private set; }
 
         public ImageSource Thumbnail { get; set; }
 
         public string Describe { get; set; }
+
+        public string SourcePath { get; set; }
     }
 }

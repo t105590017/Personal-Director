@@ -229,7 +229,8 @@ namespace Personal_Director
                         this._viewModel.AddMediaIntoCabinet(new Media(Guid.Parse(mediaCabinetGuid[i]))
                         {
                             Thumbnail = image,
-                            Describe = file.Name
+                            Describe = file.Name,
+                            SourcePath = file.Path
                         });
                     }
                 }

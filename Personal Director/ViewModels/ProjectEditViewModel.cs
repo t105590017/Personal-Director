@@ -72,6 +72,11 @@ namespace Personal_Director.ViewModels
             this._model.RemoveStoryBoardFromScriptData(slelctedItem);
         }
 
+        public void UpdateStoryBoard(StoryBoard updatedStoryBoard)
+        {
+            this._model.UpdateStoryBoard(updatedStoryBoard);
+        }
+
         //通知變更
         public void NotifyPropertyChanged(string propertyName)
         {
