@@ -178,7 +178,7 @@
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7AD;" FontSize="14" HorizontalAlignment="Right"/>
                     </StackPanel>
                 </Button>
-                <Button Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Button x:Name="BarDeleteBtn" Background="{x:Null}" Padding="7,3,7,3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="StoryBoardDelete_Click">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE74D;" FontSize="14" HorizontalAlignment="Right"/>
                     </StackPanel>

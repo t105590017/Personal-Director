@@ -2,6 +2,7 @@
 using Personal_Director.View;
 using Personal_Director.ViewModels;
 using Production.MediaProcess;
+using Production.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -60,33 +61,64 @@ namespace Personal_Director
 
         #region events
 
-        ///// <summary>
-        ///// 影片處理測試事件
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //private async void ffmpegTest_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var picker = new Windows.Storage.Pickers.FileOpenPicker();
-        //    picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
-        //    picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
-        //    picker.FileTypeFilter.Add("*");
-        //    StorageFile file = await picker.PickSingleFileAsync();
+#if DEBUG
+        List<string> guids = new List<string>();
+        /// <summary>
+        /// 功能列刪除(debug下是測試)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void StoryBoardDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
+            picker.FileTypeFilter.Add("*");
+            StorageFile file = await picker.PickSingleFileAsync();
 
-        //    if (file != null)
-        //    {
-        //        Guid guid = Guid.NewGuid();
-        //        //guids.Add(guid.ToString());
+            if (file != null)
+            {
+                Guid guid = Guid.NewGuid();
+                guids.Add(guid.ToString());
 
-        //        VideoHandler.SetSource(guid, file.Path)
-        //                    .CutVideo(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20))
-        //                    .AddTextToVideo(guid.ToString(), Production.Enum.VideoPosition.Center, System.Drawing.Color.Blue, fontsize: 72);
-        //        //if (guids.Count() == 3)
-        //        //{
-        //        //    VideoHandlerObject videoHandlerObject = VideoHandler.Export(guids.ToArray());
-        //        //}
-        //    }
-        //}
+                #region 直接操作Handler
+                //VideoHandler.SetSource(guid, file.Path)
+                //            .CutVideo(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20))
+                //            .ChangeVideoSpeed(4)
+                //            .ChangeAudioSpeed(2).ChangeAudioSpeed(2)
+                //            .AddTextToVideo(guid.ToString(), Production.Enum.VideoPosition.Center, System.Drawing.Color.Blue, fontsize: 72);
+                #endregion
+                #region 操作介面
+                List<IEffect> effects = new List<IEffect>()
+                {
+                    new CutEffect(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20)),
+                    new SpeedEffect(4),
+                    new TextEffect(guid.ToString(), Production.Enum.VideoPosition.Center, System.Drawing.Color.Blue, fontsize: 72)
+                };
+                effects.ForEach(i =>
+                {
+                    i.SetDataSource(guid, file.Path);
+                    i.Excute();
+                });
+                #endregion
+
+                if (guids.Count() == 3)
+                {
+                    var outPath = VideoHandler.Export(guids.ToArray()).OutputPath;
+                }
+            }
+        }
+#else
+        /// <summary>
+        /// 功能列刪除
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void StoryBoardDelete_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+#endif
 
         /// <summary>
         /// 按下上一頁按鈕
