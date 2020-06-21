@@ -102,7 +102,7 @@ namespace Personal_Director
                 });
                 #endregion
 
-                if (guids.Count() == 3)
+                if (guids.Count() > 1)
                 {
                     var outPath = VideoHandler.Export(guids.ToArray()).OutputPath;
                 }

@@ -251,6 +251,14 @@ namespace Production.MediaProcess
         /// <returns></returns>
         public VideoHandlerObject ConcatenateVideos(string[] guids)
         {
+            StorageFolder.GetFolderFromPathAsync($"{ApplicationData.Current.LocalFolder.Path}\\MediaProcess").AsTask().GetAwaiter().GetResult()
+                         .GetFilesAsync().AsTask().GetAwaiter().GetResult()
+                         .Where(i => i.DisplayName == "Output").ToList()
+                         .ForEach(i =>
+                         {
+                             i.DeleteAsync().AsTask().GetAwaiter().GetResult();
+                         });
+
             StorageFolder folder = StorageFolder.GetFolderFromPathAsync($"{this.WorkPath}\\{guids.FirstOrDefault()}").AsTask().GetAwaiter().GetResult();
             this.FielType = this.FielType ?? folder.GetFilesAsync().AsTask().GetAwaiter().GetResult().FirstOrDefault().FileType;
 
