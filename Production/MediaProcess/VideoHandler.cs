@@ -30,12 +30,12 @@ namespace Production.MediaProcess
         /// 取得
         /// </summary>
         /// <param name="guid">分鏡guid</param>
-        /// <param name="fileType">Source Path</param>
+        /// <param name="filePath">Source Path</param>
         /// <returns></returns>
-        public static VideoHandlerObject SetSource(Guid guid, string fileType)
+        public static VideoHandlerObject SetSource(Guid guid, string filePath)
         {
             IsInitial();
-            return new VideoHandlerObject(guid, fileType);
+            return new VideoHandlerObject(guid, filePath);
         }
 
         /// <summary>

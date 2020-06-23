@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Production.MediaProcess;
 using Production.Model;
 
 namespace Personal_Director.Models
@@ -17,6 +18,7 @@ namespace Personal_Director.Models
         {
             this.Guid = Guid.NewGuid();
             this.MediaSource = media;
+            VideoHandler.SetSource(this.Guid, media.SourcePath);
             this._effects = new List<IEffect>();
         }
 
