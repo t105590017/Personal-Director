@@ -93,7 +93,7 @@ namespace Personal_Director
                 {
                     new CutEffect(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20)),
                     new SpeedEffect(4),
-                    new TextEffect(guid.ToString(), Production.Enum.VideoPosition.Center, System.Drawing.Color.Blue, fontsize: 72)
+                    new TextEffect(guid.ToString(), Production.Enum.VideoPosition.Center, System.Drawing.Color.Blue, Fontsize: 72)
                 };
                 effects.ForEach(i =>
                 {

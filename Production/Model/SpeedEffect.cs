@@ -7,16 +7,18 @@ namespace Production.Model
 {
     public class SpeedEffect : IEffect
     {
+        public double Multiple { get; private set; }
         private int Count { get; set; }
         private VideoHandlerObject videoHandler { get; set; }
 
         /// <summary>
         /// 修改速度
         /// </summary>
-        /// <param name="multiple">倍率(須為2的次方)</param>
-        public SpeedEffect(double multiple)
+        /// <param name="Multiple">倍率(須為2的次方)</param>
+        public SpeedEffect(double Multiple)
         {
-            this.Count = (int)Math.Log(multiple, 2);
+            this.Multiple = Multiple;
+            this.Count = (int)Math.Log(Multiple, 2);
         }
 
         public string OutputPath { get; private set; }

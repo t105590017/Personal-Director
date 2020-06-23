@@ -22,7 +22,7 @@ namespace Personal_Director.ViewModels
         public string GetProcessedMediaPath(string text, Production.Enum.VideoPosition position, Color color, string font, int size)
         {
             // TODO: 字型與字體大小還未寫
-            IEffect effect = new TextEffect(text, position, color, fontsize:size, fontfile:font);
+            IEffect effect = new TextEffect(text, position, color, Fontsize:size, Fontfile:font);
             effect.SetDataSource(this.StoryBoard.Guid, this.StoryBoard.MediaSource.SourcePath);
             effect.Excute();
             this.StoryBoard.AddEffect(effect);
