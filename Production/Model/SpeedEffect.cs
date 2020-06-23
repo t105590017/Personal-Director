@@ -27,6 +27,15 @@ namespace Production.Model
             this.OutputPath = path;
         }
 
+        public List<object> GetParameters()
+        {
+            List<object> result = new List<object>();
+
+            result.Add(this.Count);
+
+            return result;
+        }
+
         public void Excute()
         {
             if (Count == 1)

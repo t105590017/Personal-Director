@@ -7,6 +7,7 @@ using Personal_Director.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Collections.Specialized;
+using Production.MediaProcess;
 
 namespace Personal_Director.ViewModels
 {
@@ -29,11 +30,6 @@ namespace Personal_Director.ViewModels
         public void AddMediaIntoProjectInfo(string path, Media media) 
         {
             this._model.Project.AddMediaIntoCabinetJson(path, media);
-        }
-
-        public void AddStoryBoardIntoProjectInfo(StoryBoard storyBoard)
-        {
-            this._model.Project.AddStoryBoardIntoScriptJson(storyBoard);
         }
 
         public ObservableCollection<Media> GridViewMediaCabinetList
@@ -75,6 +71,17 @@ namespace Personal_Director.ViewModels
         public void UpdateStoryBoard(StoryBoard updatedStoryBoard)
         {
             this._model.UpdateStoryBoard(updatedStoryBoard);
+        }
+
+        public List<string> getAllStoryBoardGuids()
+        {
+            List<StoryBoard> script = this._model.getAllStoryBoardScriptData().ToList();
+            List<string> guids = new List<string>();
+            foreach (StoryBoard storyBoard in script)
+            {
+                guids.Add(storyBoard.Guid.ToString());
+            }
+            return guids;
         }
 
         //通知變更

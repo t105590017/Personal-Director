@@ -77,23 +77,6 @@ namespace Personal_Director_Tests.Models
         }
 
         [TestMethod]
-        public void AddStoryBoardIntoScriptJsonTest()
-        {
-            //Arrange
-            string jsonString = @"{""MediaCabinet"":[{""path"":""C:\\Users\\LaAaa\\Videos\\guitar.mp4"",""Guid"":""c4d41b0b-4f29-47cc-b84d-09273e6268ad""}],""Script"":[{""Guid"":""22f9f73a-d951-422e-9f69-240635feea80""}]}";
-            Project sut = new Project(jsonString);
-            Guid guid = Guid.NewGuid();
-            StoryBoard storyBoard = new StoryBoard(new Media(guid));
-
-            //Act
-            sut.AddStoryBoardIntoScriptJson(storyBoard);
-
-            //Assert
-            Assert.AreEqual(2, sut.GetMediaSourceGuids().Count);
-            Assert.AreEqual(guid, sut.GetMediaSourceGuids().Last());
-        }
-
-        [TestMethod]
         public void GetMediaSourceGuidsTest()
         {
             //Arrange

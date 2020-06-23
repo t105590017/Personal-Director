@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Production.Model;
 
 namespace Personal_Director.Models
 {
@@ -10,23 +11,28 @@ namespace Personal_Director.Models
     {
         public Media MediaSource { get; set; }
 
-        private List<Effect> _effects;
+        private List<IEffect> _effects;
 
         public StoryBoard(Media media)
         {
             this.Guid = Guid.NewGuid();
             this.MediaSource = media;
-            this._effects = new List<Effect>();
+            this._effects = new List<IEffect>();
         }
 
         public Guid Guid { get; private set; }
 
-        public void AddEffect(Effect effect)
+        public void AddEffect(IEffect effect)
         {
             this._effects.Add(effect);
         }
 
-        public void RemoveEffect(Effect effect)
+        public List<IEffect> GetAllEffects()
+        {
+            return this._effects;
+        }
+
+        public void RemoveEffect(IEffect effect)
         {
             this._effects.Remove(effect);
         }

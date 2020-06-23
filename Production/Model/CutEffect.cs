@@ -30,6 +30,16 @@ namespace Production.Model
             this.OutputPath = path;
         }
 
+        public List<object> GetParameters()
+        {
+            List<object> result = new List<object>();
+
+            result.Add(this.Begin);
+            result.Add(this.End);
+
+            return result;
+        }
+
         public void Excute()
         {
             this.videoHandler.CutVideo(this.Begin, this.End);

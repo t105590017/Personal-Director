@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Production.Model;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -68,24 +69,44 @@ namespace Personal_Director.Models
         /// <summary>
         /// 將新增的StoryBoard寫入JsonArray
         /// </summary>
-        /// <param name="storyBoard"></param>
-        public void AddStoryBoardIntoScriptJson(StoryBoard storyBoard)
-        {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.Add("Guid", JsonValue.CreateStringValue(storyBoard.MediaSource.Guid.ToString()));
-            this._scriptJson.Add(jsonObject);
-        }
-
-        /// <summary>
-        /// 將新增的StoryBoard寫入JsonArray
-        /// </summary>
         /// <param name="index"></param>
         /// <param name="storyBoard"></param>
         public void InsertStoryBoardIntoScriptJson(int index, StoryBoard storyBoard)
         {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.Add("Guid", JsonValue.CreateStringValue(storyBoard.MediaSource.Guid.ToString()));
+            jsonObject.Add("Guid", JsonValue.CreateStringValue(storyBoard.Guid.ToString()));
+            jsonObject.Add("MediaSourceGuid", JsonValue.CreateStringValue(storyBoard.MediaSource.Guid.ToString()));
             this._scriptJson.Insert(index, jsonObject);
+        }
+
+        public void UpdateStoryBoard(int index, StoryBoard updatedStoryBoard)
+        {
+            //TODO: 分鏡存入專案檔未寫
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.Add("Guid", JsonValue.CreateStringValue(updatedStoryBoard.Guid.ToString()));
+            jsonObject.Add("MediaSourceGuid", JsonValue.CreateStringValue(updatedStoryBoard.MediaSource.Guid.ToString()));
+            jsonObject.Add("Effects", this.ConvertEffectIntoJson(updatedStoryBoard.GetAllEffects()));
+
+            this._scriptJson.RemoveAt(index);
+            this._scriptJson.Insert(index, jsonObject);
+        }
+
+        private JsonArray ConvertEffectIntoJson(List<IEffect> effectsList)
+        {
+            JsonArray effects = new JsonArray();
+            foreach (IEffect effect in effectsList)
+            {
+                JsonObject effectObject = new JsonObject();
+                effectObject.Add("Name", JsonValue.CreateStringValue(effect.GetType().ToString()));
+                JsonArray parameters = new JsonArray();
+                foreach (object parameter in effect.GetParameters())
+                {
+                    parameters.Add(JsonValue.CreateStringValue(parameter.ToString()));
+                }
+                effectObject.Add("Parameters", parameters);
+                effects.Add(effectObject);
+            }
+            return effects;
         }
 
         public List<string> GetMediaCabinetPaths()
@@ -123,7 +144,7 @@ namespace Personal_Director.Models
             for (int i = 0; i < this._scriptJson.Count; i++)
             {
                 JsonObject storyBoard = this._scriptJson[i].GetObject();
-                mediaSourceGuids.Add(Guid.Parse(storyBoard.GetNamedString("Guid")));
+                mediaSourceGuids.Add(Guid.Parse(storyBoard.GetNamedString("MediaSourceGuid")));
             }
             return mediaSourceGuids;
         }
