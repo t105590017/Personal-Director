@@ -85,7 +85,9 @@ namespace Personal_Director.Models
         internal void UpdateStoryBoard(StoryBoard updatedStoryBoard)
         {
             var storyBoard = this._storyBoardScriptData.FirstOrDefault(x => x.Guid == updatedStoryBoard.Guid);
-            this._storyBoardScriptData[this._storyBoardScriptData.IndexOf(storyBoard)] = updatedStoryBoard;
+            int index = this._storyBoardScriptData.IndexOf(storyBoard);
+            this._storyBoardScriptData[index] = updatedStoryBoard;
+            this.Project.UpdateStoryBoard(index, updatedStoryBoard);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Personal_Director.Models;
 using Production.MediaProcess;
+using Production.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +21,11 @@ namespace Personal_Director.ViewModels
 
         public string GetProcessedMediaPath(TimeSpan startTime, TimeSpan endTime) 
         {
-            VideoHandlerObject videoHandlerObject =  VideoHandler.SetSource(this.StoryBoard.Guid, this.StoryBoard.MediaSource.SourcePath)
-                            .CutVideo(startTime, endTime);
-
-            return videoHandlerObject.OutputPath;
+            IEffect effect = new CutEffect(startTime, endTime);
+            effect.SetDataSource(this.StoryBoard.Guid, this.StoryBoard.MediaSource.SourcePath);
+            effect.Excute();
+            this.StoryBoard.AddEffect(effect);
+            return effect.OutputPath;
         }
     }
 }

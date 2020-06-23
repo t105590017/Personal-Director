@@ -77,6 +77,17 @@ namespace Personal_Director.ViewModels
             this._model.UpdateStoryBoard(updatedStoryBoard);
         }
 
+        public List<string> getAllStoryBoardGuids()
+        {
+            List<StoryBoard> script = this._model.getAllStoryBoardScriptData().ToList();
+            List<string> guids = new List<string>();
+            foreach (StoryBoard storyBoard in script)
+            {
+                guids.Add(storyBoard.Guid.ToString());
+            }
+            return guids;
+        }
+
         //通知變更
         public void NotifyPropertyChanged(string propertyName)
         {

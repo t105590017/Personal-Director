@@ -198,6 +198,7 @@ namespace Personal_Director.View
         {
             string outPutPath = this.ViewModel.GetProcessedMediaPath(TimeSpan.FromSeconds(RangeSelectorControl.RangeMin), TimeSpan.FromSeconds(RangeSelectorControl.RangeMax));
 
+
             StorageFile file = await StorageFile.GetFileFromPathAsync(outPutPath);
             if (file != null)
             {

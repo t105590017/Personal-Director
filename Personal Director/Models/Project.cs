@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Production.Model;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -85,6 +86,30 @@ namespace Personal_Director.Models
         {
             JsonObject jsonObject = new JsonObject();
             jsonObject.Add("Guid", JsonValue.CreateStringValue(storyBoard.MediaSource.Guid.ToString()));
+            this._scriptJson.Insert(index, jsonObject);
+        }
+
+        public void UpdateStoryBoard(int index, StoryBoard updatedStoryBoard)
+        {
+            //TODO: 分鏡存入專案檔未寫
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.Add("Guid", JsonValue.CreateStringValue(updatedStoryBoard.MediaSource.Guid.ToString()));
+            JsonArray effects = new JsonArray();
+            foreach (IEffect effect in updatedStoryBoard.GetAllEffects())
+            {
+                JsonObject effectObject = new JsonObject();
+                effectObject.Add("Name", JsonValue.CreateStringValue(effect.GetType().ToString()));
+                JsonArray parameters = new JsonArray();
+                foreach (object parameter in effect.GetParameters())
+                {
+                    parameters.Add(JsonValue.CreateStringValue(parameter.ToString()));
+                }
+                effectObject.Add("Parameters", parameters);
+                effects.Add(effectObject);
+            }
+            jsonObject.Add("Effects", effects);
+
+            this._scriptJson.RemoveAt(index);
             this._scriptJson.Insert(index, jsonObject);
         }
 

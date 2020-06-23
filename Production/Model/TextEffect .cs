@@ -67,6 +67,19 @@ namespace Production.Model
             this.OutputPath = path;
         }
 
+        public List<object> GetParameters()
+        {
+            List<object> result = new List<object>();
+
+            result.Add(this.Text);
+            result.Add(this.Position);
+            result.Add(this.Color);
+            result.Add(this.Fontfile);
+            result.Add(this.Fontsize);
+
+            return result;
+        }
+
         public void Excute()
         {
             if (this._type == 0)

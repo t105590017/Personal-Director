@@ -25,6 +25,8 @@ using Microsoft.Toolkit.Uwp.UI.Controls;
 using Microsoft.Graphics.Canvas.Text;
 using Personal_Director.Models;
 using Personal_Director.ViewModels;
+using Production.Enum;
+using Windows.Storage.FileProperties;
 
 // 空白頁項目範本已記錄在 https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -40,6 +42,8 @@ namespace Personal_Director.View
         TimeSpan _duration;
 
         private TextEditPageViewModel ViewModel;
+
+        private VideoPosition _textPosition;
 
         public TextEditPage()
         {
@@ -211,61 +215,94 @@ namespace Personal_Director.View
         {
             subtitle.VerticalAlignment = VerticalAlignment.Top;
             subtitle.HorizontalAlignment = HorizontalAlignment.Left;
+            this._textPosition = VideoPosition.TopLeft;
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             subtitle.VerticalAlignment = VerticalAlignment.Top;
             subtitle.HorizontalAlignment = HorizontalAlignment.Center;
+            this._textPosition = VideoPosition.TopCenter;
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             subtitle.VerticalAlignment = VerticalAlignment.Top;
             subtitle.HorizontalAlignment = HorizontalAlignment.Right;
+            this._textPosition = VideoPosition.TopRight;
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             subtitle.VerticalAlignment = VerticalAlignment.Center;
             subtitle.HorizontalAlignment = HorizontalAlignment.Left;
+            this._textPosition = VideoPosition.CenterLeft;
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
             subtitle.VerticalAlignment = VerticalAlignment.Center;
             subtitle.HorizontalAlignment = HorizontalAlignment.Center;
+            this._textPosition = VideoPosition.Center;
         }
 
         private void Button_Click_6(object sender, RoutedEventArgs e)
         {
             subtitle.VerticalAlignment = VerticalAlignment.Center;
             subtitle.HorizontalAlignment = HorizontalAlignment.Right;
+            this._textPosition = VideoPosition.CenterRight;
         }
 
         private void Button_Click_7(object sender, RoutedEventArgs e)
         {
             subtitle.VerticalAlignment = VerticalAlignment.Bottom;
             subtitle.HorizontalAlignment = HorizontalAlignment.Left;
+            this._textPosition = VideoPosition.ButtomLeft;
         }
 
         private void Button_Click_8(object sender, RoutedEventArgs e)
         {
             subtitle.VerticalAlignment = VerticalAlignment.Bottom;
             subtitle.HorizontalAlignment = HorizontalAlignment.Center;
+            this._textPosition = VideoPosition.ButtomCenter;
         }
 
         private void Button_Click_9(object sender, RoutedEventArgs e)
         {
             subtitle.VerticalAlignment = VerticalAlignment.Bottom;
             subtitle.HorizontalAlignment = HorizontalAlignment.Right;
+            this._textPosition = VideoPosition.ButtomRight;
+
         }
 
-        private void Saving_Click(object sender, RoutedEventArgs e)
+        private async void Saving_Click(object sender, RoutedEventArgs e)
         {
             output.Text = currentTime.Text.ToString() + '/' + subtitle.Text + '/' + subtitle.FontSize.ToString() + '/'
                 + color.Text.ToString() + '/' + FontsCombo.SelectedValue.ToString() + "/VerticalAlignment:" 
                 + subtitle.VerticalAlignment.ToString() + "/HorizontalAlignment:" + subtitle.HorizontalAlignment.ToString();
+
+            string outPutPath = this.ViewModel.GetProcessedMediaPath(this.subtitle.Text, this._textPosition, this.FontsCombo.SelectedValue.ToString(), Convert.ToInt32(this.subtitle.FontSize));
+
+            StorageFile file = await StorageFile.GetFileFromPathAsync(outPutPath);
+            if (file != null)
+            {
+                var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                const uint requestedSize = 190;
+                const ThumbnailMode thumbnailMode = ThumbnailMode.VideosView;
+                const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
+                var image = new BitmapImage();
+                image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
+                this.ViewModel.StoryBoard.MediaSource = new Media
+                {
+                    Thumbnail = image,
+                    Describe = file.Name,
+                    SourcePath = file.Path
+                };
+
+                this.Frame.Navigate(typeof(ProjectEdit), this.ViewModel.StoryBoard);
+            }
         }
+
+        //private System.Drawing.Color convertColor(Windows.UI.Color color)
     }
 }

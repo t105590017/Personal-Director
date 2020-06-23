@@ -399,12 +399,37 @@ namespace Personal_Director
         }
 
         //匯出影片
-        private void ExportButton_Click(object sender, RoutedEventArgs e)
+        private async void ExportButton_Click(object sender, RoutedEventArgs e)
         {
+            var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+            savePicker.SuggestedStartLocation =
+                Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            // Dropdown of file types the user can save the file as
+            savePicker.FileTypeChoices.Add("Video", new List<string>() { ".mp4" });
+            // Default file name if the user does not type one in or select a file to replace
+            savePicker.SuggestedFileName = "My Video";
 
+            StorageFile file = await savePicker.PickSaveFileAsync();
+            if (file != null)
+            {
+                //TODO: 空腳本輸出防呆
+                List<string> StoryBoardGuids = this.ViewModel.getAllStoryBoardGuids();
+                StorageFile video = await StorageFile.GetFileFromPathAsync(VideoHandler.Export(StoryBoardGuids.ToArray()).OutputPath);
+                StorageFile copiedVideo = await video.CopyAsync(await file.GetParentAsync(), file.Name, NameCollisionOption.ReplaceExisting);
+
+                // 彈出視窗 沒用
+                ContentDialog noWifiDialog = new ContentDialog
+                {
+                    Title = "Test",
+                    Content = "匯出成功",
+                    CloseButtonText = "Ok"
+                };
+
+                ContentDialogResult result = await noWifiDialog.ShowAsync();
+
+            }
         }
+
         #endregion
-
-
     }
 }

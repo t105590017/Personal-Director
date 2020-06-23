@@ -16,9 +16,16 @@ namespace Production.Model
         /// <param name="guid">暫存guid</param>
         /// <param name="path">資料來源</param>
         void SetDataSource(Guid guid, string path);
+
+        /// <summary>
+        /// 取得所有參數
+        /// </summary>
+        /// <returns></returns>
+        List<object> GetParameters();
         /// <summary>
         /// 執行
         /// </summary>
+        /// 
         void Excute();
     }
 }
