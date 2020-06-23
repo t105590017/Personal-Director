@@ -7,19 +7,19 @@ namespace Production.Model
 {
     public class CutEffect : IEffect
     {
-        private TimeSpan Begin { get; set; }
-        private TimeSpan End { get; set; }
+        public TimeSpan Begin { get; private set; }
+        public TimeSpan End { get; private set; }
         private VideoHandlerObject videoHandler { get; set; }
 
         /// <summary>
         /// 影片剪裁
         /// </summary>
-        /// <param name="begin">開始時間</param>
-        /// <param name="end">結束時間</param>
-        public CutEffect(TimeSpan begin, TimeSpan end)
+        /// <param name="Begin">開始時間</param>
+        /// <param name="End">結束時間</param>
+        public CutEffect(TimeSpan Begin, TimeSpan End)
         {
-            this.Begin = begin;
-            this.End = end;
+            this.Begin = Begin;
+            this.End = End;
         }
 
         public string OutputPath { get; private set; }
