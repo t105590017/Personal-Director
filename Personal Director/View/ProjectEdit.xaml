@@ -102,6 +102,7 @@
             </GridView>
             <Button x:Name="SaveButton" Content="儲存專案" Click="SaveProject_Click" Grid.Column="1" Margin="138,10,0,0" VerticalAlignment="Top" Background="#33FFFFFF"/>
             <Button x:Name="ExportButton" Content="匯出影片" Click="ExportButton_Click"  Grid.Column="1" Margin="33,10,0,0" VerticalAlignment="Top" Background="#33FFFFFF"/>
+            <Button x:Name="PreviewButton" Content="預覽" Click="PreviewButton_Click" Grid.Column="1" Margin="259,10,0,0" VerticalAlignment="Top" Background="#33FFFFFF"/>
         </Grid>
 
         <Grid Grid.Row="0" Grid.Column="1">

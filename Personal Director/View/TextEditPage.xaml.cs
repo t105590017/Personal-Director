@@ -278,10 +278,12 @@ namespace Personal_Director.View
         private async void Saving_Click(object sender, RoutedEventArgs e)
         {
             output.Text = currentTime.Text.ToString() + '/' + subtitle.Text + '/' + subtitle.FontSize.ToString() + '/'
-                + color.Text.ToString() + '/' + FontsCombo.SelectedValue.ToString() + "/VerticalAlignment:" 
+                + this.color.Text.ToString() + '/' + FontsCombo.SelectedValue.ToString() + "/VerticalAlignment:" 
                 + subtitle.VerticalAlignment.ToString() + "/HorizontalAlignment:" + subtitle.HorizontalAlignment.ToString();
 
-            string outPutPath = this.ViewModel.GetProcessedMediaPath(this.subtitle.Text, this._textPosition, this.FontsCombo.SelectedValue.ToString(), Convert.ToInt32(this.subtitle.FontSize));
+            Color colorItem= this.colorPicker.Color;
+            var systemColor = System.Drawing.Color.FromArgb(colorItem.A, colorItem.R, colorItem.G, colorItem.B);
+            string outPutPath = this.ViewModel.GetProcessedMediaPath(this.subtitle.Text, this._textPosition, systemColor, this.FontsCombo.SelectedValue.ToString(), Convert.ToInt32(this.subtitle.FontSize));
 
             StorageFile file = await StorageFile.GetFileFromPathAsync(outPutPath);
             if (file != null)
@@ -302,7 +304,5 @@ namespace Personal_Director.View
                 this.Frame.Navigate(typeof(ProjectEdit), this.ViewModel.StoryBoard);
             }
         }
-
-        //private System.Drawing.Color convertColor(Windows.UI.Color color)
     }
 }

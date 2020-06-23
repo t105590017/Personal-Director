@@ -430,6 +430,24 @@ namespace Personal_Director
             }
         }
 
+        /// <summary>
+        /// 按下預覽按鈕
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void PreviewButton_Click(object sender, RoutedEventArgs e)
+        {
+            string outputPath = VideoHandler.Export(this.ViewModel.getAllStoryBoardGuids().ToArray()).OutputPath;
+            StorageFile file = await StorageFile.GetFileFromPathAsync(outputPath);
+            if (file != null)
+            {
+                var stream = await file.OpenAsync(FileAccessMode.Read);
+                this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
+            }
+        }
+
         #endregion
+
+
     }
 }
