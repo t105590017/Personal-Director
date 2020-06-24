@@ -80,7 +80,9 @@ namespace Personal_Director.Models
         //從分鏡腳本內刪除分鏡
         public void RemoveStoryBoardFromScriptData(StoryBoard storyboard)
         {
+            int index = this._storyBoardScriptData.IndexOf(this._storyBoardScriptData.FirstOrDefault(x=> x.Guid == storyboard.Guid));
             this._storyBoardScriptData.Remove(storyboard);
+            this.Project.RemoveStoryBoardFromScriptJson(index);
         }
 
         /// <summary>

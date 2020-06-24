@@ -21,6 +21,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
@@ -121,7 +122,7 @@ namespace Personal_Director
         {
             //回到首頁必須清空本頁面快取
             this.NavigationCacheMode = NavigationCacheMode.Disabled;
-            this.Frame.Navigate(typeof(HomePage));
+            this.Frame.Navigate(typeof(HomePage), new DrillInNavigationTransitionInfo());
         }
 
         /// <summary>

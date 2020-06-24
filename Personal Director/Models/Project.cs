@@ -81,6 +81,11 @@ namespace Personal_Director.Models
             this._scriptJson.Insert(index, jsonObject);
         }
 
+        public void RemoveStoryBoardFromScriptJson(int index)
+        {
+            this._scriptJson.RemoveAt(index);
+        }
+
         public void UpdateStoryBoard(int index, StoryBoard updatedStoryBoard)
         {
             //TODO: 分鏡存入專案檔未寫

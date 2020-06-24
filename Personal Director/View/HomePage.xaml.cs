@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
@@ -92,10 +93,10 @@ namespace Personal_Director
             if (!this._projectDataList.Any())
             {
                 this._projectDataList.Insert(0, new Project(_project));
-                this.Frame.Navigate(typeof(ProjectEdit), this._model);
+                this.Frame.Navigate(typeof(ProjectEdit), this._model, new DrillInNavigationTransitionInfo());
                 return;
             }
-            this.Frame.Navigate(typeof(ProjectEdit), this._model);
+            this.Frame.Navigate(typeof(ProjectEdit), this._model, new DrillInNavigationTransitionInfo());
         }
 
         private void FlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -189,7 +190,18 @@ namespace Personal_Director
                 //TODO: 讀檔 execption還沒做
                 string text = await Windows.Storage.FileIO.ReadTextAsync(file);
                 bool isProjectSetupSucess = this._viewModel.OpenProject(text);
-                Console.WriteLine(isProjectSetupSucess);
+                if (!isProjectSetupSucess)
+                {
+                    // 彈出錯誤視窗
+                    ContentDialog noWifiDialog = new ContentDialog
+                    {
+                        Title = "錯誤",
+                        Content = "專案檔損毀！",
+                        CloseButtonText = "確認"
+                    };
+                    await noWifiDialog.ShowAsync();
+                    return;
+                }
 
                 //匯入媒體櫃
                 List<string> mediaCabinetPath = this._viewModel.GetCabinetPathFromProject();

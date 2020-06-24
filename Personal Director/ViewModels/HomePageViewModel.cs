@@ -22,9 +22,15 @@ namespace Personal_Director.ViewModels
         //開啟專案
         public bool OpenProject(string jsonString)
         {
-            //TODO: 專案檔案偵錯防呆待寫
-            Project project = new Project(jsonString);
-            this._model.Project = project;
+            try
+            {
+                Project project = new Project(jsonString);
+                this._model.Project = project;
+            }
+            catch
+            {
+                return false;
+            }
             return true;
         }
 
