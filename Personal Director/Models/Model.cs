@@ -59,6 +59,11 @@ namespace Personal_Director.Models
             this._mediaCabinetData.Add(media);
         }
 
+        public void SetScriptData(ObservableCollection<StoryBoard> script)
+        {
+            this._storyBoardScriptData = script;
+        }
+
         //插入分鏡至分鏡腳本
         public void InsertStoryBoardIntoScriptData(int index, StoryBoard storyboard)
         {

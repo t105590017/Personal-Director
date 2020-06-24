@@ -22,6 +22,13 @@ namespace Personal_Director.Models
             this._effects = new List<IEffect>();
         }
 
+        public StoryBoard(Guid guid, Media media, List<IEffect> effects)
+        {
+            this.Guid = guid;
+            this.MediaSource = media;
+            this._effects = effects;
+        }
+
         public Guid Guid { get; private set; }
 
         public void AddEffect(IEffect effect)

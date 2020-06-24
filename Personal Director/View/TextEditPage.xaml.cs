@@ -294,7 +294,7 @@ namespace Personal_Director.View
                 const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
                 var image = new BitmapImage();
                 image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
-                this.ViewModel.StoryBoard.MediaSource = new Media
+                this.ViewModel.StoryBoard.MediaSource = new Media(this.ViewModel.StoryBoard.MediaSource.Guid)
                 {
                     Thumbnail = image,
                     Describe = file.Name,

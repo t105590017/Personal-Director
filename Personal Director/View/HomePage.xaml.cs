@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -204,7 +205,7 @@ namespace Personal_Director
             picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Desktop;
             picker.FileTypeFilter.Add(".proj");
 
-            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+            StorageFile file = await picker.PickSingleFileAsync();
             if (file != null)
             {
                 //TODO: 讀檔 execption還沒做
@@ -217,10 +218,10 @@ namespace Personal_Director
                 List<string> mediaCabinetGuid = this._viewModel.GetCabinetGuidFromProject();
                 for (int i = 0; i < mediaCabinetPath.Count; i++)
                 {
-                    file = await Windows.Storage.StorageFile.GetFileFromPathAsync(mediaCabinetPath[i]);
+                    file = await StorageFile.GetFileFromPathAsync(mediaCabinetPath[i]);
                     if (file != null)
                     {
-                        var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                        var stream = await file.OpenAsync(FileAccessMode.Read);
                         const uint requestedSize = 190;
                         const ThumbnailMode thumbnailMode = ThumbnailMode.VideosView;
                         const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
@@ -235,13 +236,37 @@ namespace Personal_Director
                     }
                 }
 
-                //匯入分鏡腳本
-                List<Guid> mediaSourceGuids = this._viewModel.GetMediaSourceGuidFromProject();
-                ObservableCollection<Media> mediaCabinet = this._model.getAllMediaCabinetData();
-                for (int i = 0; i < mediaSourceGuids.Count; i++)
+                //從專案檔讀取分鏡腳本資料並轉為Instance
+                ObservableCollection<StoryBoard> script = this._model.Project.GetScriptFromProject(this._model.getAllMediaCabinetData());
+                this._model.SetScriptData(script);
+                foreach (var storyBoard in this._model.getAllStoryBoardScriptData())
                 {
-                    StoryBoard storyBoard = new StoryBoard(mediaCabinet.FirstOrDefault(x => x.Guid == mediaSourceGuids[i]));
-                    this._model.AddStoryBoardIntoScriptData(storyBoard);
+                    string outputPath = storyBoard.MediaSource.SourcePath;
+                    //套用特效
+                    foreach (var effect in storyBoard.GetAllEffects())
+                    {
+                        effect.SetDataSource(storyBoard.Guid, storyBoard.MediaSource.SourcePath);
+                        effect.Excute();
+                        storyBoard.MediaSource = new Media(storyBoard.MediaSource.Guid)
+                        {
+                            SourcePath = effect.OutputPath,
+                            Thumbnail = storyBoard.MediaSource.Thumbnail
+                        };
+                        outputPath = storyBoard.MediaSource.SourcePath;
+                    }
+
+                    //讀檔並將縮圖套用至分鏡腳本
+                    file = await StorageFile.GetFileFromPathAsync(outputPath);
+                    if (file != null)
+                    {
+                        var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                        const uint requestedSize = 190;
+                        const ThumbnailMode thumbnailMode = ThumbnailMode.VideosView;
+                        const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
+                        var image = new BitmapImage();
+                        image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
+                        storyBoard.MediaSource.Thumbnail = image;
+                    }
                 }
                 this.Frame.Navigate(typeof(ProjectEdit), _model);
             }
