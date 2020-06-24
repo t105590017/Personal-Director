@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -324,29 +325,19 @@ namespace Personal_Director
                 //跟Windows確認檔案狀態
                 Windows.Storage.Provider.FileUpdateStatus status =
                     await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
-                //如果成功儲存
-                if (status == Windows.Storage.Provider.FileUpdateStatus.Complete)
-                {
-                    //this.textBlock.Text = "File " + file.Name + " was saved.";
-                }
-                else
-                {
-                    //this.textBlock.Text = "File " + file.Name + " couldn't be saved.";
-                }
-            }
-            else
-            {
-                //取消動作
-                //this.textBlock.Text = "Operation cancelled.";
             }
         }
-       
+        
+        /// <summary>
+        /// 按下媒體時更新右方預覽畫面
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void MediaCabinetList_ItemClick(object sender, ItemClickEventArgs e)
         {
             Media item = e.ClickedItem as Media;
-
-            StorageFile file = await StorageFile.GetFileFromPathAsync(item.SourcePath);
-            if (file != null) 
+            StorageFile file = await this.loadFileFromAbsolutePath(item.SourcePath);
+            if (file != null)
             {
                 var stream = await file.OpenAsync(FileAccessMode.Read);
                 this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
@@ -355,18 +346,27 @@ namespace Personal_Director
 
         private async void StoryBoardScriptList_ItemClick(object sender, ItemClickEventArgs e)
         {
-            //如果不是點擊同一個腳本才更新UI
-            if (this._selectedStoryBoard != e.ClickedItem as StoryBoard)
+            this._selectedStoryBoard = e.ClickedItem as StoryBoard;
+            StorageFile file = await this.loadFileFromAbsolutePath(_selectedStoryBoard.MediaSource.SourcePath);
+            if (file != null)
             {
-                this._selectedStoryBoard = e.ClickedItem as StoryBoard;
-
-                StorageFile file = await StorageFile.GetFileFromPathAsync(_selectedStoryBoard.MediaSource.SourcePath);
-                if (file != null)
-                {
-                    var stream = await file.OpenAsync(FileAccessMode.Read);
-                    this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
-                }
+                var stream = await file.OpenAsync(FileAccessMode.Read);
+                this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
             }
+        }
+
+        private async Task<StorageFile> loadFileFromAbsolutePath(string path)
+        {
+            StorageFile file;
+            try
+            {
+                file = await StorageFile.GetFileFromPathAsync(path);
+            }
+            catch
+            {
+                return null;
+            }
+            return file;
         }
 
         private void ClipButton_Click(object sender, RoutedEventArgs e)

@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -187,9 +188,8 @@ namespace Personal_Director
             StorageFile file = await picker.PickSingleFileAsync();
             if (file != null)
             {
-                //TODO: 讀檔 execption還沒做
-                string text = await Windows.Storage.FileIO.ReadTextAsync(file);
-                bool isProjectSetupSucess = this._viewModel.OpenProject(text);
+                string projectJsonString = await Windows.Storage.FileIO.ReadTextAsync(file);
+                bool isProjectSetupSucess = this._viewModel.OpenProject(projectJsonString);
                 if (!isProjectSetupSucess)
                 {
                     // 彈出錯誤視窗
@@ -208,8 +208,19 @@ namespace Personal_Director
                 List<string> mediaCabinetGuid = this._viewModel.GetCabinetGuidFromProject();
                 for (int i = 0; i < mediaCabinetPath.Count; i++)
                 {
-                    file = await StorageFile.GetFileFromPathAsync(mediaCabinetPath[i]);
-                    if (file != null)
+                    //file = await StorageFile.GetFileFromPathAsync(mediaCabinetPath[i]);
+                    file = await loadFileFromAbsolutePath(mediaCabinetPath[i]);
+                    if (file == null)
+                    {
+                        //將該媒體標為損毀
+                        this._viewModel.AddMediaIntoCabinet(new Media(Guid.Parse(mediaCabinetGuid[i]))
+                        {
+                            Thumbnail = new BitmapImage(),
+                            Describe = "檔案遺失!",
+                            SourcePath = null
+                        });
+                    }
+                    else
                     {
                         var stream = await file.OpenAsync(FileAccessMode.Read);
                         const uint requestedSize = 190;
@@ -264,6 +275,20 @@ namespace Personal_Director
             {
                 this.textBlock.Text = "Operation cancelled.";
             }
+        }
+
+        private async Task<StorageFile> loadFileFromAbsolutePath(string path)
+        {
+            StorageFile file;
+            try
+            {
+                file = await StorageFile.GetFileFromPathAsync(path);
+            }
+            catch
+            {
+                return null;
+            }
+            return file;
         }
     }
 }
