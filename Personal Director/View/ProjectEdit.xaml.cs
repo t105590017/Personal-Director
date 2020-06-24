@@ -61,7 +61,8 @@ namespace Personal_Director
 
         #region events
 
-#if DEBUG
+ #region Common Tools function demonstration
+    #if DEBUG
         List<string> guids = new List<string>();
         /// <summary>
         /// 功能列刪除(debug下是測試)
@@ -108,17 +109,8 @@ namespace Personal_Director
                 }
             }
         }
-#else
-        /// <summary>
-        /// 功能列刪除
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void StoryBoardDelete_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-#endif
+    #endif
+#endregion
 
         /// <summary>
         /// 按下上一頁按鈕
@@ -127,21 +119,9 @@ namespace Personal_Director
         /// <param name="e"></param>
         private void PrePage_Click(object sender, RoutedEventArgs e)
         {
-            On_BackRequested();
-        }
-
-        /// <summary>
-        /// 是否可回上一頁
-        /// </summary>
-        /// <returns></returns>
-        private bool On_BackRequested()
-        {
-            if (this.Frame.CanGoBack)
-            {
-                this.Frame.GoBack();
-                return true;
-            }
-            return false;
+            //回到首頁必須清空本頁面快取
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
+            this.Frame.Navigate(typeof(HomePage));
         }
 
         /// <summary>
@@ -273,13 +253,20 @@ namespace Personal_Director
             // 彈出視窗 沒用
             ContentDialog noWifiDialog = new ContentDialog
             {
-                Title = "Test",
-                Content = "媒體櫃刪除",
-                CloseButtonText = "Ok"
+                Title = "刪除媒體?",
+                PrimaryButtonText = "確認",
+                CloseButtonText = "取消"
             };
 
             ContentDialogResult result = await noWifiDialog.ShowAsync();
             // 彈出視窗 沒用
+
+            switch (result)
+            {
+                case ContentDialogResult.Primary:
+                    this.ViewModel.RemoveMediaFormCabinet(Guid.Parse(this._mediaSelectGuid));
+                    break;
+            }
 
             //this.ViewModel.RemoveMediaFromScript(this.MediaSelectGuid);
         }

@@ -93,6 +93,15 @@ namespace Personal_Director.Models
             this._scriptJson.Insert(index, jsonObject);
         }
 
+        /// <summary>
+        /// 從膜體櫃Json中刪除媒體
+        /// </summary>
+        /// <param name="index"></param>
+        public void RemoveMediaFromCabinetJson(int index)
+        {
+            this._mediaCabinetJson.RemoveAt(index);
+        }
+
         private JsonArray ConvertEffectIntoJson(List<IEffect> effectsList)
         {
             JsonArray effects = new JsonArray();

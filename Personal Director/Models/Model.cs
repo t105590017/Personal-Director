@@ -87,12 +87,18 @@ namespace Personal_Director.Models
         /// 更新StoryBoard
         /// </summary>
         /// <param name="updatedStoryBoard"></param>
-        internal void UpdateStoryBoard(StoryBoard updatedStoryBoard)
+        public void UpdateStoryBoard(StoryBoard updatedStoryBoard)
         {
             var storyBoard = this._storyBoardScriptData.FirstOrDefault(x => x.Guid == updatedStoryBoard.Guid);
             int index = this._storyBoardScriptData.IndexOf(storyBoard);
             this._storyBoardScriptData[index] = updatedStoryBoard;
             this.Project.UpdateStoryBoard(index, updatedStoryBoard);
+        }
+
+        public void RemoveMediaFormCabinetData(int index)
+        {
+            this._mediaCabinetData.RemoveAt(index);
+            this.Project.RemoveMediaFromCabinetJson(index);
         }
     }
 }

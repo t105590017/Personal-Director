@@ -87,28 +87,6 @@ namespace Personal_Director
             };
         }
 
-        /*private void SetViewData(HomePage viewModel)
-        {
-            ProjectDataList = new ObservableCollection<Project>(viewModel.ProjectList);
-        }*/
-
-        private void PrePage_Click(object sender, RoutedEventArgs e)
-        {
-            On_BackRequested();
-        }
-
-        private bool On_BackRequested()
-        {
-            this._project.Name = this._project.Name + "1";
-
-            if (this.Frame.CanGoBack)
-            {
-                this.Frame.GoBack();
-                return true;
-            }
-            return false;
-        }
-
         private void NewProject_Click(object sender, RoutedEventArgs e)
         {
             if (!this._projectDataList.Any())

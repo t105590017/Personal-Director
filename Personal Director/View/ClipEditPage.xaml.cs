@@ -176,7 +176,7 @@ namespace Personal_Director.View
 
         private void PrePage_Click(object sender, RoutedEventArgs e)
         {
-            On_BackRequested();
+            this.Frame.Navigate(typeof(ProjectEdit), null);
         }
 
         private bool On_BackRequested()
