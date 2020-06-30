@@ -5,7 +5,7 @@
     xmlns:local="using:Personal_Director"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Background="#FFEEE1E1" >
+    mc:Ignorable="d" Background="White" >
 
     <!--<Page.TopAppBar>
         <CommandBar>
@@ -14,8 +14,8 @@
         </CommandBar>
     </Page.TopAppBar>-->
 
-    
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" HorizontalAlignment="Stretch"  Margin="0,0,0,0" VerticalAlignment="Bottom" RenderTransformOrigin="0.521,0.519">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  Margin="0,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.521,0.519" Height="990">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="3*"/>

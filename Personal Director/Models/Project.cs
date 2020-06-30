@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -76,7 +77,13 @@ namespace Personal_Director.Models
             JsonObject jsonObject = new JsonObject();
             jsonObject.Add("Guid", JsonValue.CreateStringValue(storyBoard.Guid.ToString()));
             jsonObject.Add("MediaSourceGuid", JsonValue.CreateStringValue(storyBoard.MediaSource.Guid.ToString()));
+            jsonObject.Add("Effects", new JsonArray());
             this._scriptJson.Insert(index, jsonObject);
+        }
+
+        public void RemoveStoryBoardFromScriptJson(int index)
+        {
+            this._scriptJson.RemoveAt(index);
         }
 
         public void UpdateStoryBoard(int index, StoryBoard updatedStoryBoard)
@@ -91,20 +98,21 @@ namespace Personal_Director.Models
             this._scriptJson.Insert(index, jsonObject);
         }
 
+        /// <summary>
+        /// 從膜體櫃Json中刪除媒體
+        /// </summary>
+        /// <param name="index"></param>
+        public void RemoveMediaFromCabinetJson(int index)
+        {
+            this._mediaCabinetJson.RemoveAt(index);
+        }
+
         private JsonArray ConvertEffectIntoJson(List<IEffect> effectsList)
         {
             JsonArray effects = new JsonArray();
             foreach (IEffect effect in effectsList)
             {
-                JsonObject effectObject = new JsonObject();
-                effectObject.Add("Name", JsonValue.CreateStringValue(effect.GetType().ToString()));
-                JsonArray parameters = new JsonArray();
-                foreach (object parameter in effect.GetParameters())
-                {
-                    parameters.Add(JsonValue.CreateStringValue(parameter.ToString()));
-                }
-                effectObject.Add("Parameters", parameters);
-                effects.Add(effectObject);
+                effects.Add(effect.ToJsonObject());
             }
             return effects;
         }
@@ -112,11 +120,6 @@ namespace Personal_Director.Models
         public List<string> GetMediaCabinetPaths()
         {
             List<string> mediaCabinets = new List<string>();
-            //foreach (JsonValue jsonValue in this._mediaCabinetJson)
-            //{
-            //    JsonObject media = jsonValue.GetObject();
-            //    mediaCabinets.Add(media.GetNamedString("path"));
-            //}
             for (int i = 0; i < this._mediaCabinetJson.Count; i++)
             {
                 JsonObject media = this._mediaCabinetJson[i].GetObject();
@@ -147,6 +150,51 @@ namespace Personal_Director.Models
                 mediaSourceGuids.Add(Guid.Parse(storyBoard.GetNamedString("MediaSourceGuid")));
             }
             return mediaSourceGuids;
+        }
+
+        private List<Guid> GetStoryBoardGuids()
+        {
+            List<Guid> mediaSourceGuids = new List<Guid>();
+            for (int i = 0; i < this._scriptJson.Count; i++)
+            {
+                JsonObject storyBoard = this._scriptJson[i].GetObject();
+                mediaSourceGuids.Add(Guid.Parse(storyBoard.GetNamedString("Guid")));
+            }
+            return mediaSourceGuids;
+        }
+
+        private List<IEffect> GetEffectInstanceByIndex(int index)
+        {
+            List<IEffect> effects = new List<IEffect>();
+            JsonObject storyBoard = this._scriptJson[index].GetObject();
+            JsonArray effectsArray = storyBoard.GetNamedArray("Effects");
+            foreach (var effect in effectsArray)
+            {
+                List<string> parameters = new List<string>();
+                JsonObject jsonObject = effect.GetObject();
+                string effectName = jsonObject.GetNamedString("Name");
+                JsonArray parametersArray = jsonObject.GetNamedArray("Parameters");
+                foreach (var parameter in parametersArray)
+                {
+                    parameters.Add(parameter.GetString());
+                }
+                effects.Add(EffectFactory.CreatInstance(effectName, parameters.ToArray()));
+            }
+            
+            return effects;
+        }
+
+        public ObservableCollection<StoryBoard> GetScriptFromProject(ObservableCollection<Media> mediaCabinet)
+        {
+            ObservableCollection<StoryBoard> script = new ObservableCollection<StoryBoard>();
+            List<Guid> guids = this.GetStoryBoardGuids();
+            List<Guid> mediaSourceGuids = this.GetMediaSourceGuids();
+            for (int i = 0; i < guids.Count; i++)
+            {
+                List<IEffect> effects = this.GetEffectInstanceByIndex(i);
+                script.Add(new StoryBoard (guids[i], mediaCabinet.FirstOrDefault(x => x.Guid == mediaSourceGuids[i]), effects));
+            }
+            return script;
         }
         public DateTime Date { get; }
 

@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -21,6 +22,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
@@ -61,7 +63,8 @@ namespace Personal_Director
 
         #region events
 
-#if DEBUG
+ #region Common Tools function demonstration
+    #if DEBUG
         List<string> guids = new List<string>();
         /// <summary>
         /// 功能列刪除(debug下是測試)
@@ -108,17 +111,8 @@ namespace Personal_Director
                 }
             }
         }
-#else
-        /// <summary>
-        /// 功能列刪除
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void StoryBoardDelete_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-#endif
+    #endif
+#endregion
 
         /// <summary>
         /// 按下上一頁按鈕
@@ -127,21 +121,9 @@ namespace Personal_Director
         /// <param name="e"></param>
         private void PrePage_Click(object sender, RoutedEventArgs e)
         {
-            On_BackRequested();
-        }
-
-        /// <summary>
-        /// 是否可回上一頁
-        /// </summary>
-        /// <returns></returns>
-        private bool On_BackRequested()
-        {
-            if (this.Frame.CanGoBack)
-            {
-                this.Frame.GoBack();
-                return true;
-            }
-            return false;
+            //回到首頁必須清空本頁面快取
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
+            this.Frame.Navigate(typeof(HomePage), new DrillInNavigationTransitionInfo());
         }
 
         /// <summary>
@@ -273,13 +255,20 @@ namespace Personal_Director
             // 彈出視窗 沒用
             ContentDialog noWifiDialog = new ContentDialog
             {
-                Title = "Test",
-                Content = "媒體櫃刪除",
-                CloseButtonText = "Ok"
+                Title = "刪除媒體?",
+                PrimaryButtonText = "確認",
+                CloseButtonText = "取消"
             };
 
             ContentDialogResult result = await noWifiDialog.ShowAsync();
             // 彈出視窗 沒用
+
+            switch (result)
+            {
+                case ContentDialogResult.Primary:
+                    this.ViewModel.RemoveMediaFormCabinet(Guid.Parse(this._mediaSelectGuid));
+                    break;
+            }
 
             //this.ViewModel.RemoveMediaFromScript(this.MediaSelectGuid);
         }
@@ -336,29 +325,19 @@ namespace Personal_Director
                 //跟Windows確認檔案狀態
                 Windows.Storage.Provider.FileUpdateStatus status =
                     await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
-                //如果成功儲存
-                if (status == Windows.Storage.Provider.FileUpdateStatus.Complete)
-                {
-                    //this.textBlock.Text = "File " + file.Name + " was saved.";
-                }
-                else
-                {
-                    //this.textBlock.Text = "File " + file.Name + " couldn't be saved.";
-                }
-            }
-            else
-            {
-                //取消動作
-                //this.textBlock.Text = "Operation cancelled.";
             }
         }
-       
+        
+        /// <summary>
+        /// 按下媒體時更新右方預覽畫面
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void MediaCabinetList_ItemClick(object sender, ItemClickEventArgs e)
         {
             Media item = e.ClickedItem as Media;
-
-            StorageFile file = await StorageFile.GetFileFromPathAsync(item.SourcePath);
-            if (file != null) 
+            StorageFile file = await this.loadFileFromAbsolutePath(item.SourcePath);
+            if (file != null)
             {
                 var stream = await file.OpenAsync(FileAccessMode.Read);
                 this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
@@ -367,18 +346,27 @@ namespace Personal_Director
 
         private async void StoryBoardScriptList_ItemClick(object sender, ItemClickEventArgs e)
         {
-            //如果不是點擊同一個腳本才更新UI
-            if (this._selectedStoryBoard != e.ClickedItem as StoryBoard)
+            this._selectedStoryBoard = e.ClickedItem as StoryBoard;
+            StorageFile file = await this.loadFileFromAbsolutePath(_selectedStoryBoard.MediaSource.SourcePath);
+            if (file != null)
             {
-                this._selectedStoryBoard = e.ClickedItem as StoryBoard;
-
-                StorageFile file = await StorageFile.GetFileFromPathAsync(_selectedStoryBoard.MediaSource.SourcePath);
-                if (file != null)
-                {
-                    var stream = await file.OpenAsync(FileAccessMode.Read);
-                    this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
-                }
+                var stream = await file.OpenAsync(FileAccessMode.Read);
+                this.MediaPreView.Source = MediaSource.CreateFromStream(stream, file.ContentType);
             }
+        }
+
+        private async Task<StorageFile> loadFileFromAbsolutePath(string path)
+        {
+            StorageFile file;
+            try
+            {
+                file = await StorageFile.GetFileFromPathAsync(path);
+            }
+            catch
+            {
+                return null;
+            }
+            return file;
         }
 
         private void ClipButton_Click(object sender, RoutedEventArgs e)

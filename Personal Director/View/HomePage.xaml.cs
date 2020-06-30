@@ -6,8 +6,10 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -15,6 +17,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
@@ -86,37 +89,15 @@ namespace Personal_Director
             };
         }
 
-        /*private void SetViewData(HomePage viewModel)
-        {
-            ProjectDataList = new ObservableCollection<Project>(viewModel.ProjectList);
-        }*/
-
-        private void PrePage_Click(object sender, RoutedEventArgs e)
-        {
-            On_BackRequested();
-        }
-
-        private bool On_BackRequested()
-        {
-            this._project.Name = this._project.Name + "1";
-
-            if (this.Frame.CanGoBack)
-            {
-                this.Frame.GoBack();
-                return true;
-            }
-            return false;
-        }
-
         private void NewProject_Click(object sender, RoutedEventArgs e)
         {
             if (!this._projectDataList.Any())
             {
                 this._projectDataList.Insert(0, new Project(_project));
-                this.Frame.Navigate(typeof(ProjectEdit), this._model);
+                this.Frame.Navigate(typeof(ProjectEdit), this._model, new DrillInNavigationTransitionInfo());
                 return;
             }
-            this.Frame.Navigate(typeof(ProjectEdit), this._model);
+            this.Frame.Navigate(typeof(ProjectEdit), this._model, new DrillInNavigationTransitionInfo());
         }
 
         private void FlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -204,23 +185,44 @@ namespace Personal_Director
             picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Desktop;
             picker.FileTypeFilter.Add(".proj");
 
-            Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+            StorageFile file = await picker.PickSingleFileAsync();
             if (file != null)
             {
-                //TODO: 讀檔 execption還沒做
-                string text = await Windows.Storage.FileIO.ReadTextAsync(file);
-                bool isProjectSetupSucess = this._viewModel.OpenProject(text);
-                Console.WriteLine(isProjectSetupSucess);
+                string projectJsonString = await Windows.Storage.FileIO.ReadTextAsync(file);
+                bool isProjectSetupSucess = this._viewModel.OpenProject(projectJsonString);
+                if (!isProjectSetupSucess)
+                {
+                    // 彈出錯誤視窗
+                    ContentDialog noWifiDialog = new ContentDialog
+                    {
+                        Title = "錯誤",
+                        Content = "專案檔損毀！",
+                        CloseButtonText = "確認"
+                    };
+                    await noWifiDialog.ShowAsync();
+                    return;
+                }
 
                 //匯入媒體櫃
                 List<string> mediaCabinetPath = this._viewModel.GetCabinetPathFromProject();
                 List<string> mediaCabinetGuid = this._viewModel.GetCabinetGuidFromProject();
                 for (int i = 0; i < mediaCabinetPath.Count; i++)
                 {
-                    file = await Windows.Storage.StorageFile.GetFileFromPathAsync(mediaCabinetPath[i]);
-                    if (file != null)
+                    //file = await StorageFile.GetFileFromPathAsync(mediaCabinetPath[i]);
+                    file = await loadFileFromAbsolutePath(mediaCabinetPath[i]);
+                    if (file == null)
                     {
-                        var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                        //將該媒體標為損毀
+                        this._viewModel.AddMediaIntoCabinet(new Media(Guid.Parse(mediaCabinetGuid[i]))
+                        {
+                            Thumbnail = new BitmapImage(),
+                            Describe = "檔案遺失!",
+                            SourcePath = null
+                        });
+                    }
+                    else
+                    {
+                        var stream = await file.OpenAsync(FileAccessMode.Read);
                         const uint requestedSize = 190;
                         const ThumbnailMode thumbnailMode = ThumbnailMode.VideosView;
                         const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
@@ -235,13 +237,37 @@ namespace Personal_Director
                     }
                 }
 
-                //匯入分鏡腳本
-                List<Guid> mediaSourceGuids = this._viewModel.GetMediaSourceGuidFromProject();
-                ObservableCollection<Media> mediaCabinet = this._model.getAllMediaCabinetData();
-                for (int i = 0; i < mediaSourceGuids.Count; i++)
+                //從專案檔讀取分鏡腳本資料並轉為Instance
+                ObservableCollection<StoryBoard> script = this._model.Project.GetScriptFromProject(this._model.getAllMediaCabinetData());
+                this._model.SetScriptData(script);
+                foreach (var storyBoard in this._model.getAllStoryBoardScriptData())
                 {
-                    StoryBoard storyBoard = new StoryBoard(mediaCabinet.FirstOrDefault(x => x.Guid == mediaSourceGuids[i]));
-                    this._model.AddStoryBoardIntoScriptData(storyBoard);
+                    string outputPath = storyBoard.MediaSource.SourcePath;
+                    //套用特效
+                    foreach (var effect in storyBoard.GetAllEffects())
+                    {
+                        effect.SetDataSource(storyBoard.Guid, storyBoard.MediaSource.SourcePath);
+                        effect.Excute();
+                        storyBoard.MediaSource = new Media(storyBoard.MediaSource.Guid)
+                        {
+                            SourcePath = effect.OutputPath,
+                            Thumbnail = storyBoard.MediaSource.Thumbnail
+                        };
+                        outputPath = storyBoard.MediaSource.SourcePath;
+                    }
+
+                    //讀檔並將縮圖套用至分鏡腳本
+                    file = await StorageFile.GetFileFromPathAsync(outputPath);
+                    if (file != null)
+                    {
+                        var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                        const uint requestedSize = 190;
+                        const ThumbnailMode thumbnailMode = ThumbnailMode.VideosView;
+                        const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
+                        var image = new BitmapImage();
+                        image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
+                        storyBoard.MediaSource.Thumbnail = image;
+                    }
                 }
                 this.Frame.Navigate(typeof(ProjectEdit), _model);
             }
@@ -249,6 +275,20 @@ namespace Personal_Director
             {
                 this.textBlock.Text = "Operation cancelled.";
             }
+        }
+
+        private async Task<StorageFile> loadFileFromAbsolutePath(string path)
+        {
+            StorageFile file;
+            try
+            {
+                file = await StorageFile.GetFileFromPathAsync(path);
+            }
+            catch
+            {
+                return null;
+            }
+            return file;
         }
     }
 }

@@ -89,5 +89,11 @@ namespace Personal_Director.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public void RemoveMediaFormCabinet(Guid mediaSelectGuid)
+        {
+            int index = this.GridViewMediaCabinetList.IndexOf(this.GridViewMediaCabinetList.FirstOrDefault(x => x.Guid == mediaSelectGuid));
+            this._model.RemoveMediaFormCabinetData(index);
+        }
     }
 }

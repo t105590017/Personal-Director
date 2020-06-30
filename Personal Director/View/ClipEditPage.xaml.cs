@@ -176,7 +176,7 @@ namespace Personal_Director.View
 
         private void PrePage_Click(object sender, RoutedEventArgs e)
         {
-            On_BackRequested();
+            this.Frame.Navigate(typeof(ProjectEdit), null);
         }
 
         private bool On_BackRequested()
@@ -208,7 +208,7 @@ namespace Personal_Director.View
                 const ThumbnailOptions thumbnailOptions = ThumbnailOptions.UseCurrentScale;
                 var image = new BitmapImage();
                 image.SetSource(await file.GetThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions));
-                this.ViewModel.StoryBoard.MediaSource = new Media
+                this.ViewModel.StoryBoard.MediaSource = new Media(this.ViewModel.StoryBoard.MediaSource.Guid)
                 {
                     Thumbnail = image,
                     Describe = file.Name,

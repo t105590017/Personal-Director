@@ -59,6 +59,11 @@ namespace Personal_Director.Models
             this._mediaCabinetData.Add(media);
         }
 
+        public void SetScriptData(ObservableCollection<StoryBoard> script)
+        {
+            this._storyBoardScriptData = script;
+        }
+
         //插入分鏡至分鏡腳本
         public void InsertStoryBoardIntoScriptData(int index, StoryBoard storyboard)
         {
@@ -75,19 +80,27 @@ namespace Personal_Director.Models
         //從分鏡腳本內刪除分鏡
         public void RemoveStoryBoardFromScriptData(StoryBoard storyboard)
         {
+            int index = this._storyBoardScriptData.IndexOf(this._storyBoardScriptData.FirstOrDefault(x=> x.Guid == storyboard.Guid));
             this._storyBoardScriptData.Remove(storyboard);
+            this.Project.RemoveStoryBoardFromScriptJson(index);
         }
 
         /// <summary>
         /// 更新StoryBoard
         /// </summary>
         /// <param name="updatedStoryBoard"></param>
-        internal void UpdateStoryBoard(StoryBoard updatedStoryBoard)
+        public void UpdateStoryBoard(StoryBoard updatedStoryBoard)
         {
             var storyBoard = this._storyBoardScriptData.FirstOrDefault(x => x.Guid == updatedStoryBoard.Guid);
             int index = this._storyBoardScriptData.IndexOf(storyBoard);
             this._storyBoardScriptData[index] = updatedStoryBoard;
             this.Project.UpdateStoryBoard(index, updatedStoryBoard);
+        }
+
+        public void RemoveMediaFormCabinetData(int index)
+        {
+            this._mediaCabinetData.RemoveAt(index);
+            this.Project.RemoveMediaFromCabinetJson(index);
         }
     }
 }
